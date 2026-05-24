@@ -36,8 +36,7 @@
                 </a>
             </div>
 
-            <div class="w-full sm:max-w-md glass-card p-12 rounded-[3rem] shadow-2xl overflow-hidden relative">
-                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-400 via-brand-600 to-brand-400"></div>
+            <div class="w-full sm:max-w-md bg-white p-12 rounded-xl border border-gray-200 overflow-hidden relative">
                 {{ $slot }}
             </div>
             

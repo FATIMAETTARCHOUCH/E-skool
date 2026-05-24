@@ -3,12 +3,12 @@
 @section('header', 'Modifier le Cours')
 
 @section('content')
-<div class="glass p-10 rounded-[3rem] border border-white/60 shadow-glass max-w-3xl">
+<div class="bg-white p-6 rounded-lg border border-gray-200 max-w-3xl">
     <form action="{{ route('admin.courses.update', $course) }}" method="POST" class="space-y-6">
         @csrf
         @method('PUT')
         <div>
-            <x-input-label value="Titre du Cours" />
+            <x-input-label value="courses.title - Course Title" />
             <x-text-input name="title" :value="$course->title" class="w-full mt-1" required />
             @error('title')
                 <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
@@ -16,22 +16,22 @@
         </div>
         
         <div>
-            <x-input-label value="Description" />
-            <textarea name="description" rows="4" class="w-full mt-1 bg-white/50 border border-slate-200 rounded-2xl py-3 px-4">{{ $course->description }}</textarea>
+            <x-input-label value="courses.description - Description" />
+            <textarea name="description" rows="4" class="w-full mt-1 bg-gray-50 border border-gray-200 rounded-lg py-3 px-4">{{ $course->description }}</textarea>
             @error('description')
                 <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
             @enderror
         </div>
 
         <div>
-            <x-input-label value="Assigner aux Groupes" class="mb-2" />
-            <div class="glass p-4 rounded-2xl border border-white/40 max-h-48 overflow-y-auto space-y-2">
+            <x-input-label value="course_group (Assign to Groups)" class="mb-2" />
+            <div class="bg-white p-3 rounded-lg border border-gray-200 max-h-48 overflow-y-auto space-y-2">
                 @foreach($groups as $group)
                 <label class="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" name="group_ids[]" value="{{ $group->id }}" 
                         {{ $course->groups->contains($group->id) ? 'checked' : '' }}
-                        class="rounded border-slate-300 text-brand-600 focus:ring-brand-500">
-                    <span class="text-sm font-bold text-slate-700">{{ $group->name }}</span>
+                        class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                    <span class="text-sm font-bold text-gray-700">{{ $group->name }}</span>
                 </label>
                 @endforeach
             </div>
@@ -40,9 +40,9 @@
             @enderror
         </div>
 
-        <div class="flex gap-4 pt-4">
-            <a href="{{ route('admin.courses.index') }}" class="flex-1 py-3 text-center rounded-2xl bg-slate-100 text-slate-600 font-bold hover:bg-slate-200">Annuler</a>
-            <button type="submit" class="flex-1 py-3 rounded-2xl bg-brand-600 text-white font-bold shadow-glow hover:bg-brand-500">Mettre à jour le Cours</button>
+        <div class="flex gap-3 pt-4">
+            <a href="{{ route('admin.courses.index') }}" class="flex-1 py-2.5 text-center rounded-lg bg-gray-100 text-gray-600 font-bold hover:bg-gray-200">Cancel</a>
+            <button type="submit" class="flex-1 py-2.5 rounded-lg bg-indigo-600 text-white font-bold hover:bg-indigo-700">Update Course (courses)</button>
         </div>
     </form>
 </div>

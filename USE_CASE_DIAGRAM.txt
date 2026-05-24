@@ -1,0 +1,48 @@
+%% USE_CASE_DIAGRAM.mmd
+%% Mermaid use case diagram for FATI-PROJET
+graph TB
+    subgraph Etudiant["👤 Étudiant"]
+        E1["Se connecter"]
+        E2["Afficher tableau de bord"]
+        E3["Consulter cours"]
+        E4["Visualiser leçon"]
+        E5["Soumettre quiz"]
+        E6["Consulter résultats"]
+        E7["Afficher progression"]
+    end
+
+    subgraph Admin["👨‍💼 Administrateur"]
+        A1["Gérer écoles & branches"]
+        A2["Gérer groupes"]
+        A3["Créer & modifier cours"]
+        A4["Attribuer cours aux groupes"]
+        A5["Créer leçons"]
+        A6["Ajouter contenu multimédia"]
+        A7["Créer quiz"]
+        A8["Ajouter questions & options"]
+        A9["Publier quiz"]
+        A10["Gérer utilisateurs"]
+        A11["Consulter analytics"]
+    end
+
+    subgraph Teacher["👨‍🏫 Enseignant"]
+        T1["Consulter étudiants bloqués"]
+        T2["Envoyer message"]
+        T3["Consulter analytics"]
+        T4["Réinitialiser tentatives"]
+    end
+
+    subgraph System["🎓 Système FATI-PROJET"]
+        S1["Calculer score quiz"]
+        S2["Gérer progression"]
+        S3["Rediriger variante"]
+        S4["Notifier blocage"]
+    end
+
+    E5 --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    A7 --> A8
+    A8 --> A9
+    T1 --> T4

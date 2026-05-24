@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class GroupController extends Controller
 {
@@ -57,38 +58,43 @@ class GroupController extends Controller
     public function importStudents(Request $request, $id)
     {
         $request->validate([
-            'csv_file' => 'required|file|mimes:csv,txt',
+            'xlsx_file' => 'required|file|mimes:xlsx',
         ]);
 
         $group = \App\Models\Group::findOrFail($id);
-        $file = $request->file('csv_file');
-        $handle = fopen($file->getRealPath(), 'r');
+        $file = $request->file('xlsx_file');
         
-        // Skip header
-        fgetcsv($handle);
-
+        // Read Excel file
+        $rows = Excel::toArray([], $file);
+        
         $imported = 0;
-        while (($data = fgetcsv($handle)) !== FALSE) {
-            // CSV format: first_name, last_name, age, massar_code
-            if (count($data) >= 4) {
-                \App\Models\User::updateOrCreate(
-                    ['massar_code' => $data[3]],
-                    [
-                        'first_name' => $data[0],
-                        'last_name'  => $data[1],
-                        'age'        => $data[2],
-                        'group_id'   => $group->id,
-                        'role'       => 'student',
-                        'username'   => $data[3], // Default to massar_code
-                        'password'   => \Illuminate\Support\Facades\Hash::make($data[3]), // Default to massar_code
-                        'is_first_login' => true,
-                    ]
-                );
-                $imported++;
+        // Process first sheet
+        if (!empty($rows[0])) {
+            foreach ($rows[0] as $index => $row) {
+                // Skip header row (first row)
+                if ($index === 0) {
+                    continue;
+                }
+                
+                // Excel format: first_name, last_name, age, massar_code
+                if (count($row) >= 4 && !empty($row[3])) {
+                    \App\Models\User::updateOrCreate(
+                        ['massar_code' => trim($row[3])],
+                        [
+                            'first_name' => trim($row[0]),
+                            'last_name'  => trim($row[1]),
+                            'age'        => (int)$row[2],
+                            'group_id'   => $group->id,
+                            'role'       => 'student',
+                            'username'   => trim($row[3]), // Default to massar_code
+                            'password'   => \Illuminate\Support\Facades\Hash::make(trim($row[3])), // Default to massar_code
+                            'is_first_login' => true,
+                        ]
+                    );
+                    $imported++;
+                }
             }
         }
-
-        fclose($handle);
 
         return redirect()->back()->with('success', "Successfully imported $imported students.");
     }

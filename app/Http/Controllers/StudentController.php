@@ -39,9 +39,8 @@ class StudentController extends Controller
 
     public function lesson($id)
     {
-        $lesson = Lesson::with(['quizzes' => function($q) {
-            $q->where('is_active', true);
-        }])->findOrFail($id);
+        // Load all quizzes; visibility is based on lesson access and quiz existence.
+        $lesson = Lesson::with('quizzes')->findOrFail($id);
         
         $course = $lesson->course;
         $user = auth()->user();
@@ -182,13 +181,35 @@ class StudentController extends Controller
                 ]
             ]);
         } else {
-            return redirect()->route('student.lesson', $quiz->lesson_id)
+            // Recommendation rule: use the explicit parent-variant relationship
+            $currentLesson = $quiz->lesson;
+            
+            // If current lesson is a variant, get the parent's simplest variant
+            // Otherwise, if current lesson is a parent, get its simplest variant
+            $simplestLesson = null;
+            
+            if ($currentLesson->parent_lesson_id) {
+                // Current lesson is a variant; get simplest variant of the parent
+                $simplestLesson = $currentLesson->parent()->first()?->getSimplestVariant();
+            } else {
+                // Current lesson is a parent; get its simplest variant
+                $simplestLesson = $currentLesson->getSimplestVariant();
+            }
+
+            $redirect = redirect()->route('student.lesson', $quiz->lesson_id)
                 ->with('error', "Vous avez obtenu $currentPercentage%. Le seuil est de $passingScorePercentage%. Veuillez réviser et réessayer.")
                 ->with('quiz_result', [
                     'score' => $score,
                     'total' => $total,
                     'percentage' => $currentPercentage
                 ]);
+
+            if ($simplestLesson) {
+                $redirect = $redirect->with('recommended_lesson_id', $simplestLesson->id)
+                    ->with('recommended_lesson_title', $simplestLesson->title);
+            }
+
+            return $redirect;
         }
     }
 

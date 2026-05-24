@@ -23,10 +23,10 @@
     <div class="flex h-screen overflow-hidden p-4 gap-4">
         
         <!-- Sidebar -->
-        <aside class="w-72 glass shadow-glass rounded-4xl flex-shrink-0 flex flex-col overflow-hidden border border-white/60">
-            <div class="p-8 border-b border-slate-100/50">
+        <aside class="w-72 bg-white rounded-xl flex-shrink-0 flex flex-col overflow-hidden border border-gray-200">
+            <div class="p-8 border-b border-gray-200">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                    <div class="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center border border-indigo-200">
                         <x-application-logo class="w-7 h-7 object-contain" />
                     </div>
                     <h2 class="text-xl font-black tracking-tighter text-slate-800">Auto<span class="text-indigo-600">Reméd</span></h2>
@@ -51,17 +51,17 @@
                 @endphp
 
                 @foreach($links as $link)
-                <a href="{{ $link['url'] }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-200 group
-                   {{ request()->is(trim($link['url'], '/').'*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-slate-500 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                <a href="{{ $link['url'] }}" class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group
+                   {{ request()->is(trim($link['url'], '/').'*') ? 'bg-indigo-600 text-white' : 'text-gray-600 hover:bg-gray-50 hover:text-indigo-600' }}">
                    <svg class="w-5 h-5 opacity-70 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $link['icon'] }}"></path></svg>
                    <span class="font-black text-[10px] uppercase tracking-widest">{{ $link['label'] }}</span>
                 </a>
                 @endforeach
             </nav>
-            <div class="p-6 border-t border-slate-100/50">
+            <div class="p-6 border-t border-gray-200">
                 <form method="POST" action="/logout">
                     @csrf
-                    <button type="submit" class="w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-red-500 font-black text-[10px] uppercase tracking-widest hover:bg-red-50 transition-colors">
+                    <button type="submit" class="w-full flex items-center justify-center gap-2 py-3 rounded-lg text-red-600 font-black text-[10px] uppercase tracking-widest hover:bg-red-50 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                         Déconnexion
                     </button>
@@ -71,9 +71,9 @@
 
         <!-- Main Content -->
         <main class="flex-1 overflow-y-auto space-y-6">
-            <div class="glass p-10 rounded-4xl shadow-glass min-h-full border border-white/60">
+            <div class="bg-white p-10 rounded-xl min-h-full border border-gray-200">
                 <header class="mb-10">
-                    <h1 class="text-3xl font-black tracking-tighter text-slate-900 uppercase">@yield('header', 'Tableau de Bord')</h1>
+                    <h1 class="text-2xl font-bold text-gray-900">@yield('header', 'Tableau de Bord')</h1>
                 </header>
                 @yield('content')
             </div>

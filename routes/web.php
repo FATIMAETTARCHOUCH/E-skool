@@ -40,10 +40,12 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('student')->name('student.')->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\StudentController::class, 'dashboard'])->name('dashboard');
         Route::get('/courses/{id}', [\App\Http\Controllers\StudentController::class, 'course'])->name('course');
-        Route::get('/lessons/{id}', [\App\Http\Controllers\StudentController::class, 'lesson'])->name('lesson');
+        Route::get('/lessons/{lesson}', [\App\Http\Controllers\Student\LessonController::class, 'show'])->name('lesson');
+        Route::get('/lessons/{lesson}/variant', [\App\Http\Controllers\Student\LessonController::class, 'showVariant'])->name('lesson.variant');
         Route::post('/lessons/{id}/complete', [\App\Http\Controllers\StudentController::class, 'completeLesson'])->name('lesson.complete');
-        Route::get('/quizzes/{id}', [\App\Http\Controllers\StudentController::class, 'quiz'])->name('quiz');
-        Route::post('/quizzes/{id}/submit', [\App\Http\Controllers\StudentController::class, 'submitQuiz'])->name('quiz.submit');
+        Route::get('/quizzes/{quiz}', [\App\Http\Controllers\Student\QuizController::class, 'show'])->name('quiz');
+        Route::post('/quizzes/{quiz}/submit', [\App\Http\Controllers\Student\QuizController::class, 'submit'])->name('quiz.submit');
+        Route::get('/quizzes/{quiz}/result', [\App\Http\Controllers\Student\QuizController::class, 'result'])->name('quiz.result');
         Route::get('/analytics', [\App\Http\Controllers\StudentController::class, 'analytics'])->name('analytics');
     });
 
@@ -78,6 +80,11 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('users', UserController::class);
     Route::resource('students', AdminStudentController::class);
     Route::resource('lessons', LessonController::class);
+    Route::get('courses/{courseId}/lessons-for-parent', [LessonController::class, 'getLessonsForParent'])->name('lessons.for_parent');
+    Route::delete('pdfs/{pdf}', [LessonController::class, 'deletePdf'])->name('pdfs.delete');
+    Route::post('lessons/{lesson}/reorder-pdfs', [LessonController::class, 'reorderPdfs'])->name('lessons.reorder_pdfs');
+    Route::get('progress/{group}', [\App\Http\Controllers\Admin\StudentProgressController::class, 'index'])->name('progress.index');
+    Route::get('progress/student/{student}', [\App\Http\Controllers\Admin\StudentProgressController::class, 'show'])->name('progress.show');
     Route::resource('quizzes', QuizController::class);
     Route::get('quizzes/{quiz}/questions', [QuestionController::class, 'index'])->name('quizzes.questions.index');
     Route::post('quizzes/{quiz}/questions', [QuestionController::class, 'store'])->name('quizzes.questions.store');

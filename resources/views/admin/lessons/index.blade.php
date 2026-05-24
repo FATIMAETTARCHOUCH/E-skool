@@ -24,6 +24,7 @@
                     <tr class="text-gray-500 uppercase text-xs font-bold border-b border-gray-200">
                         <th class="px-6 py-4">Title & Group</th>
                         <th class="px-6 py-4">Attachments</th>
+                        <th class="px-6 py-4">Type</th>
                         <th class="px-6 py-4">Tag</th>
                         <th class="px-6 py-4 text-right">Actions</th>
                     </tr>
@@ -33,15 +34,6 @@
                     <tr class="hover:bg-gray-50/50 transition duration-150">
                         <td class="px-6 py-5">
                             <div class="font-black text-slate-800 text-lg group-hover:text-brand-600 transition-colors leading-tight">{{ $lesson->title }}</div>
-                            <div class="flex flex-wrap gap-1 mt-2">
-                                @forelse($lesson->groups as $group)
-                                <span class="px-2 py-0.5 rounded bg-brand-50 text-brand-600 text-[8px] font-black uppercase tracking-tighter border border-brand-100 italic">
-                                    {{ $group->branch->school->name }} / {{ $group->name }}
-                                </span>
-                                @empty
-                                <span class="text-[8px] text-slate-400 font-bold uppercase italic">Unassigned</span>
-                                @endforelse
-                            </div>
                         </td>
                         <td class="px-6 py-5">
                             <div class="flex gap-2">
@@ -64,6 +56,11 @@
                                 <span class="text-xs text-gray-400 italic">None</span>
                                 @endif
                             </div>
+                        </td>
+                        <td class="px-6 py-5 text-sm">
+                            <span class="px-3 py-1 rounded-full bg-slate-100 text-xs font-bold text-gray-700">
+                                {{ ucfirst($lesson->type ?? 'normal') }}
+                            </span>
                         </td>
                         <td class="px-6 py-5 text-sm">
                             <span class="px-3 py-1 rounded-full bg-neu-base shadow-neumorphic-inset text-xs font-bold text-gray-600">

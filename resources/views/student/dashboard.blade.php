@@ -1,21 +1,21 @@
 @extends('layouts.app')
 
 @section('header')
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div class="flex items-center gap-6">
-            <div class="w-20 h-20 rounded-3xl glass flex items-center justify-center text-brand-600 shadow-glass border border-white/60">
-                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 14l9-5-9-5-9 5 9 5z"></path><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.083 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+            <div class="w-16 h-16 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 border border-indigo-200">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 14l9-5-9-5-9 5 9 5z"></path><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.083 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
             </div>
             <div>
-                <h2 class="text-4xl font-black text-slate-900 tracking-tight">Bienvenue, {{ $user->first_name }}</h2>
-                <div class="flex items-center gap-3 mt-2">
-                    <span class="px-3 py-1 rounded-full bg-brand-50 text-brand-600 text-[10px] font-black uppercase tracking-widest border border-brand-100">Massar: {{ $user->massar_code }}</span>
-                    <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-500 text-[10px] font-black uppercase tracking-widest">{{ $group ? $group->name : 'Non assigné' }}</span>
+                <h2 class="text-2xl font-bold text-gray-900">Bienvenue, {{ $user->first_name }}</h2>
+                <div class="flex items-center gap-3 mt-1">
+                    <span class="px-2 py-1 rounded-md bg-indigo-50 text-indigo-600 text-[10px] font-bold uppercase border border-indigo-200">Massar: {{ $user->massar_code }}</span>
+                    <span class="px-2 py-1 rounded-md bg-gray-100 text-gray-600 text-[10px] font-bold uppercase">{{ $group ? $group->name : 'Non assigné' }}</span>
                 </div>
             </div>
         </div>
-        <div class="flex gap-4">
-            <a href="{{ route('student.analytics') }}" class="px-8 py-4 rounded-2xl bg-white/60 backdrop-blur-md border border-white/40 shadow-glass font-black text-xs text-slate-600 hover:text-brand-600 transition-all uppercase tracking-widest">
+        <div>
+            <a href="{{ route('student.analytics') }}" class="px-4 py-2.5 rounded-lg bg-gray-100 border border-gray-200 font-bold text-xs text-gray-600 hover:bg-gray-200 transition-all uppercase tracking-widest">
                 VOIR LES ANALYSES
             </a>
         </div>

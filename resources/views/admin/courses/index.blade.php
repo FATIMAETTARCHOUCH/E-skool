@@ -1,36 +1,69 @@
 @extends('layouts.admin')
 
-@section('header', 'Cours')
+@section('header', 'Gestion des Cours')
 
 @section('content')
-<div class="glass p-10 rounded-[3rem] border border-white/60 shadow-glass">
-    <div class="flex justify-between items-center mb-8">
-        <h3 class="text-2xl font-black text-slate-800">Gestion des Cours</h3>
-        <a href="{{ route('admin.courses.create') }}" class="px-6 py-3 rounded-2xl bg-brand-600 text-white font-bold shadow-glow hover:bg-brand-500 transition-colors">Créer un Cours</a>
+<div class="space-y-6">
+    <div class="bg-white p-6 rounded-lg border border-gray-200 flex flex-col sm:flex-row sm:items-center gap-4">
+        <input type="text" id="courseSearch" placeholder="Rechercher des cours..." class="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:bg-white transition">
+        <a href="{{ route('admin.courses.create') }}" class="px-4 py-2.5 rounded-lg bg-indigo-600 text-white font-bold text-sm hover:bg-indigo-700 transition-colors whitespace-nowrap">+ Créer un Cours</a>
     </div>
 
-    <div class="overflow-x-auto">
-        <table class="w-full text-left">
-            <thead>
-                <tr class="text-slate-400 text-xs uppercase tracking-widest font-black border-b border-slate-200">
-                    <th class="pb-4 pl-4">Titre</th>
-                    <th class="pb-4">Groupes</th>
-                    <th class="pb-4 text-right pr-4">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100">
-                @foreach($courses as $course)
-                <tr class="group hover:bg-white/40 transition-colors">
-                    <td class="py-4 pl-4 font-bold text-slate-700">{{ $course->title }}</td>
-                    <td class="py-4 text-sm text-slate-500">{{ $course->groups->pluck('name')->join(', ') }}</td>
-                    <td class="py-4 pr-4 flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <a href="{{ route('admin.courses.show', $course) }}" class="text-brand-600 hover:text-brand-700 font-bold text-xs uppercase">Gérer les Parties</a>
-                        <a href="{{ route('admin.courses.edit', $course) }}" class="text-indigo-600 hover:text-indigo-700 font-bold text-xs uppercase">Modifier</a>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+    <!-- Courses Table -->
+    <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="text-gray-500 text-xs uppercase tracking-wide font-medium border-b border-gray-100 bg-gray-50">
+                        <th class="px-6 py-3">Titre</th>
+                        <th class="px-6 py-3">Groupes</th>
+                        <th class="px-6 py-3">Leçons</th>
+                        <th class="px-6 py-3 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @forelse($courses as $course)
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="font-bold text-gray-900">{{ $course->title }}</div>
+                            <div class="text-xs text-gray-500 mt-0.5">{{ Str::limit($course->description ?? '', 50) }}</div>
+                        </td>
+                        <td class="px-6 py-4 text-sm">
+                            @if($course->groups->count())
+                                <div class="flex gap-2 flex-wrap">
+                                    @foreach($course->groups->take(3) as $group)
+                                    <span class="px-2 py-1 rounded-md bg-blue-50 text-blue-700 text-xs font-medium border border-blue-200">{{ $group->name }}</span>
+                                    @endforeach
+                                    @if($course->groups->count() > 3)
+                                    <span class="px-2 py-1 rounded-md bg-gray-50 text-gray-600 text-xs font-medium border border-gray-200">+{{ $course->groups->count() - 3 }}</span>
+                                    @endif
+                                </div>
+                            @else
+                                <span class="text-gray-400 italic">—</span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 rounded-md bg-indigo-50 text-indigo-700 text-xs font-medium border border-indigo-200">{{ $course->lessons->count() }}</span>
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <div class="flex justify-end gap-2">
+                                <a href="{{ route('admin.courses.show', $course) }}" class="px-3 py-1.5 rounded-md bg-indigo-50 text-indigo-600 hover:bg-indigo-100 text-xs font-bold uppercase border border-indigo-200 transition" title="Gérer les leçons">
+                                    Leçons
+                                </a>
+                                <a href="{{ route('admin.courses.edit', $course) }}" class="px-3 py-1.5 rounded-md bg-indigo-50 text-indigo-600 hover:bg-indigo-100 text-xs font-bold uppercase border border-indigo-200 transition">
+                                    Modifier
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="4" class="px-6 py-12 text-center text-gray-400 italic">Aucun cours créé</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 @endsection

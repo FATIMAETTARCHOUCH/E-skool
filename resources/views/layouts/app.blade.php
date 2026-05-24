@@ -40,7 +40,7 @@
             @isset($header)
                 <header class="pt-8 pb-4">
                     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div class="glass p-8 rounded-4xl shadow-glass border border-white/40">
+                        <div class="bg-white p-8 rounded-xl border border-gray-200">
                             {{ $header }}
                         </div>
                     </div>

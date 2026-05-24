@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="glass-card m-4 rounded-3xl border-none shadow-glass">
+<nav x-data="{ open: false }" class="bg-white m-4 rounded-xl border border-gray-200">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-20">
@@ -6,7 +6,7 @@
                 <!-- Logo & Brand -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" class="flex items-center gap-3 group">
-                        <div class="p-2 bg-white rounded-xl shadow-sm group-hover:scale-105 transition-transform">
+                        <div class="p-2 bg-indigo-50 rounded-lg border border-indigo-200">
                             <x-application-logo class="block h-8 w-auto object-contain" />
                         </div>
                         <span class="text-xl font-black tracking-tighter text-slate-800">Auto<span class="text-indigo-600">Reméd</span></span>
@@ -28,7 +28,7 @@
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center px-5 py-3 border border-slate-100 text-xs leading-4 font-black rounded-2xl text-slate-600 bg-white/50 hover:bg-white hover:shadow-sm transition-all uppercase tracking-widest">
+                        <button class="inline-flex items-center px-5 py-3 border border-gray-200 text-xs leading-4 font-black rounded-lg text-gray-600 bg-gray-50 hover:bg-white transition-all uppercase tracking-widest">
                             <div>{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</div>
 
                             <div class="ms-2">
@@ -60,7 +60,7 @@
 
             <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-3 rounded-2xl text-slate-400 hover:text-indigo-600 hover:bg-white transition-all">
+                <button @click="open = ! open" class="inline-flex items-center justify-center p-3 rounded-lg text-gray-500 hover:text-indigo-600 hover:bg-gray-50 transition-all">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16" />
                         <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
@@ -71,18 +71,18 @@
     </div>
 
     <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-white/80 backdrop-blur-md rounded-b-3xl border-t border-slate-100 p-4">
+    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-white border-t border-gray-200 p-4 rounded-b-xl">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="rounded-2xl font-black uppercase tracking-widest text-[10px]">
+            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="rounded-lg font-black uppercase tracking-widest text-[10px]">
                 {{ __('Tableau de Bord') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('messages.index')" :active="request()->is('messages*')" class="rounded-2xl font-black uppercase tracking-widest text-[10px]">
+            <x-responsive-nav-link :href="route('messages.index')" :active="request()->is('messages*')" class="rounded-lg font-black uppercase tracking-widest text-[10px]">
                 {{ __('Messages') }}
             </x-responsive-nav-link>
         </div>
 
         <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-slate-100">
+        <div class="pt-4 pb-1 border-t border-gray-200">
             <div class="px-4 mb-4">
                 <div class="font-black text-xs text-slate-800 uppercase tracking-widest">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</div>
                 <div class="font-bold text-[10px] text-slate-400 uppercase tracking-widest">{{ Auth::user()->username }}</div>

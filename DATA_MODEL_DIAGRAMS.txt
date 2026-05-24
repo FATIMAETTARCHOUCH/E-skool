@@ -1,0 +1,544 @@
+================================================================================
+FATI-PROJET: DATA MODEL AND WORKFLOW DIAGRAMS (Mermaid Syntax)
+================================================================================
+
+This file contains comprehensive Mermaid diagrams for the FATI-PROJET application:
+1. Database/Data Model Class Diagram
+2. Student Learning Workflow Sequence Diagram
+3. Quiz Submission and Remediation Sequence Diagram
+4. Admin Content Management Sequence Diagram
+
+================================================================================
+1. DATABASE/DATA MODEL CLASS DIAGRAM
+================================================================================
+All models, attributes, and relationships without methods
+
+---
+
+classDiagram
+    %% Organizational Structure
+    class School {
+        id: int PK
+        name: string
+        timestamps
+    }
+
+    class Branch {
+        id: int PK
+        school_id: int FK
+        name: string
+        timestamps
+    }
+
+    class AcademicYear {
+        id: int PK
+        name: string
+        is_active: boolean
+        timestamps
+    }
+
+    class Group {
+        id: int PK
+        branch_id: int FK
+        academic_year_id: int FK
+        name: string
+        timestamps
+    }
+
+    class User {
+        id: int PK
+        group_id: int FK
+        role: enum(admin, student)
+        first_name: string
+        last_name: string
+        age: int
+        massar_code: string
+        username: string
+        password: hashed
+        is_first_login: boolean
+        last_login_at: datetime
+        timestamps
+    }
+
+    %% Course & Lesson Content
+    class Course {
+        id: int PK
+        teacher_id: int FK (User)
+        title: string
+        description: text
+        category: string
+        level: string
+        timestamps
+    }
+
+    class Lesson {
+        id: int PK
+        course_id: int FK
+        order: int
+        title: string
+        tag: string
+        timestamps
+    }
+
+    class LessonContent {
+        id: int PK
+        lesson_id: int FK
+        type: enum(text, pdf, video, image)
+        value: text
+        order: int
+        timestamps
+    }
+
+    class LessonPDF {
+        id: int PK
+        lesson_id: int FK
+        title: string
+        pdf_path: string
+        order: int
+        timestamps
+    }
+
+    class LessonVariant {
+        id: int PK
+        original_lesson_id: int FK (Lesson)
+        variant_lesson_id: int FK (Lesson)
+        trigger: enum(quiz_failed)
+        timestamps
+    }
+
+    %% Quiz & Assessment
+    class Quiz {
+        id: int PK
+        lesson_id: int FK
+        title: string
+        passing_score: int
+        is_active: boolean
+        scheduled_at: datetime
+        timestamps
+    }
+
+    class Question {
+        id: int PK
+        quiz_id: int FK
+        content_text: text
+        image_path: string
+        video_path: string
+        timestamps
+    }
+
+    class Option {
+        id: int PK
+        question_id: int FK
+        content_text: text
+        is_correct: boolean
+        timestamps
+    }
+
+    class QuizRetake {
+        id: int PK
+        quiz_id: int FK
+        user_id: int FK
+        attempt_number: int
+        status: enum(in_progress, completed)
+        started_at: datetime
+        completed_at: datetime
+        timestamps
+    }
+
+    class Answer {
+        id: int PK
+        user_id: int FK
+        question_id: int FK
+        option_id: int FK
+        quiz_retake_id: int FK
+        timestamps
+    }
+
+    class Result {
+        id: int PK
+        user_id: int FK
+        quiz_id: int FK
+        quiz_retake_id: int FK
+        score: int (percentage)
+        is_passed: boolean
+        attempt_number: int
+        timestamps
+    }
+
+    %% Progress Tracking
+    class StudentProgress {
+        id: int PK
+        user_id: int FK
+        lesson_id: int FK
+        status: enum(LOCKED, IN_PROGRESS, UNLOCKED, PASSED, PASSED_WITH_HELP, STUCK)
+        completed_at: datetime
+        unlocked_at: datetime
+        time_spent_seconds: int
+        timestamps
+    }
+
+    %% Communication
+    class Message {
+        id: int PK
+        sender_id: int FK (User)
+        receiver_id: int FK (User)
+        content: text
+        read_at: datetime
+        timestamps
+    }
+
+    %% Pivot Tables
+    class CourseGroup {
+        id: int PK
+        course_id: int FK
+        group_id: int FK
+        timestamps
+    }
+
+    class LessonGroup {
+        id: int PK
+        lesson_id: int FK
+        group_id: int FK
+        timestamps
+    }
+
+    %% Relationships: Organizational Structure
+    School "1" --> "*" Branch : has
+    Branch "1" --> "*" Group : contains
+    AcademicYear "1" --> "*" Group : belongs to
+    Group "1" --> "*" User : enrolls
+
+    %% Relationships: User & Course
+    User "1" --> "*" Course : teaches (teacher_id)
+    User "1" --> "*" Message : sends
+    User "1" --> "*" Message : receives
+    User "1" --> "*" QuizRetake : submits
+    User "1" --> "*" Result : achieves
+    User "1" --> "*" StudentProgress : tracks
+
+    %% Relationships: Course & Content
+    Course "1" --> "*" Lesson : contains
+    Course "*" <--> "*" Group : assigned via CourseGroup
+    Lesson "1" --> "*" LessonContent : has
+    Lesson "1" --> "*" LessonPDF : includes
+    Lesson "1" --> "*" LessonVariant : original in
+    Lesson "1" --> "*" LessonVariant : variant of
+    Lesson "1" --> "*" Quiz : assessed by
+    Lesson "1" --> "*" StudentProgress : tracked in
+
+    %% Relationships: Quiz & Assessment
+    Quiz "1" --> "*" Question : contains
+    Quiz "1" --> "*" QuizRetake : retaken
+    Quiz "1" --> "*" Result : produces
+    Question "1" --> "*" Option : has
+    Question "1" --> "*" Answer : answered by
+    Option "1" --> "*" Answer : selected in
+    QuizRetake "1" --> "*" Answer : records
+    QuizRetake "1" --> "0..1" Result : generates
+    Result "1" --> "1" QuizRetake : recorded in
+
+    %% Group Access
+    Group "*" <--> "*" Lesson : accesses via LessonGroup
+
+---
+
+END OF CLASS DIAGRAM
+
+
+================================================================================
+2. STUDENT LEARNING WORKFLOW SEQUENCE DIAGRAM
+================================================================================
+Student accessing a course, viewing a lesson, and preparing for a quiz
+
+---
+
+sequenceDiagram
+    participant Student as Student User
+    participant StudentUI as Student UI
+    participant StudentController as StudentController
+    participant CourseModel as Course Model
+    participant LessonModel as Lesson Model
+    participant ProgressService as LessonProgressService
+    participant StudentProgress as StudentProgress Model
+    participant Database as Database
+
+    Student->>StudentUI: Clicks Dashboard
+    StudentUI->>StudentController: GET /student/dashboard
+    StudentController->>CourseModel: Query courses for group
+    CourseModel->>Database: SELECT courses WHERE group_id
+    Database-->>CourseModel: Return course list
+    CourseModel-->>StudentController: Return courses
+    StudentController-->>StudentUI: Display available courses
+    StudentUI-->>Student: Show courses dashboard
+
+    Student->>StudentUI: Clicks on Course
+    StudentUI->>StudentController: GET /student/courses/{id}
+    StudentController->>CourseModel: with('lessons').findOrFail(id)
+    CourseModel->>Database: SELECT course + lessons
+    Database-->>CourseModel: Return course with lessons
+    StudentController->>StudentProgress: Query progress for lessons
+    StudentProgress->>Database: SELECT WHERE lesson_id IN (...)
+    Database-->>StudentProgress: Return progress records
+    StudentController-->>StudentUI: Display course with lessons
+    StudentUI-->>Student: Show lesson list with progress
+
+    Student->>StudentUI: Clicks on Lesson
+    StudentUI->>StudentController: GET /student/lessons/{lesson}
+    StudentController->>LessonModel: with('quizzes').findOrFail(lesson)
+    LessonModel->>Database: SELECT lesson + quizzes
+    Database-->>LessonModel: Return lesson data
+    StudentController->>ProgressService: startLesson(student, lesson)
+    ProgressService->>StudentProgress: firstOrCreate(student_id, lesson_id)
+    StudentProgress->>Database: INSERT/UPDATE student_progress
+    Database-->>StudentProgress: Mark UNLOCKED or IN_PROGRESS
+    StudentProgress-->>ProgressService: Return progress record
+    ProgressService-->>StudentController: Return progress status
+    StudentController-->>StudentUI: Display lesson content
+    StudentUI-->>Student: Show lesson with quiz button
+
+---
+
+END OF STUDENT LEARNING WORKFLOW DIAGRAM
+
+
+================================================================================
+3. QUIZ SUBMISSION AND REMEDIATION SEQUENCE DIAGRAM
+================================================================================
+Student submitting quiz answers, receiving results, and handling remediation
+
+---
+
+sequenceDiagram
+    participant Student as Student User
+    participant StudentUI as Student UI
+    participant QuizController as Student\QuizController
+    participant ProgressService as LessonProgressService
+    participant QuizModel as Quiz Model
+    participant QuizRetakeModel as QuizRetake Model
+    participant ResultModel as Result Model
+    participant AnswerModel as Answer Model
+    participant LessonModel as Lesson Model
+    participant Database as Database
+    participant Notification as Notification System
+
+    Student->>StudentUI: Answers quiz questions
+    StudentUI->>StudentUI: Collect all answers (question_id -> option_id)
+    Student->>StudentUI: Clicks Submit Quiz
+    StudentUI->>QuizController: POST /student/quizzes/{quiz}/submit
+
+    QuizController->>QuizModel: Load quiz with questions
+    QuizModel->>Database: SELECT quiz + questions + options
+    Database-->>QuizModel: Return quiz data
+    QuizModel-->>QuizController: Return loaded quiz
+
+    QuizController->>ProgressService: submitQuizAttempt(student, quiz, answers)
+    ProgressService->>Database: BEGIN TRANSACTION
+
+    ProgressService->>QuizRetakeModel: Determine attempt_number
+    QuizRetakeModel->>Database: SELECT MAX(attempt_number) for this quiz+user
+    Database-->>QuizRetakeModel: Return last attempt number
+    ProgressService->>QuizRetakeModel: Create new QuizRetake with attempt_number
+    QuizRetakeModel->>Database: INSERT new quiz_retake
+    Database-->>QuizRetakeModel: Return retake_id
+
+    ProgressService->>AnswerModel: Process each answer
+    AnswerModel->>Database: DELETE old answers (idempotency)
+    Database-->>AnswerModel: Confirm delete
+    loop For each answer
+        AnswerModel->>Database: Verify option is_correct
+        Database-->>AnswerModel: Return correct flag
+        AnswerModel->>Database: INSERT answer record
+        Database-->>AnswerModel: Confirm insert
+    end
+
+    ProgressService->>ResultModel: Calculate score
+    Note over ProgressService: percentage = (correct/total) * 100<br/>passed = (percentage >= passing_score)
+    ResultModel->>Database: INSERT result record
+    Database-->>ResultModel: Return result_id
+
+    alt Quiz Passed (percentage >= passing_score)
+        ProgressService->>AnswerModel: Mark StudentProgress as PASSED
+        alt Attempt 1
+            ProgressService->>Database: Update progress.status = PASSED
+        else Attempt 2+
+            ProgressService->>Database: Update progress.status = PASSED_WITH_HELP
+        end
+        Database-->>ProgressService: Confirm update
+        ProgressService->>Database: COMMIT TRANSACTION
+        Database-->>ProgressService: Return passed=true
+        ProgressService-->>QuizController: Return {passed: true, score: X}
+        QuizController->>LessonModel: Find next lesson
+        LessonModel->>Database: SELECT next lesson by order
+        Database-->>LessonModel: Return next lesson
+        QuizController-->>StudentUI: Redirect to next lesson
+        StudentUI-->>Student: "Quiz passed! Next lesson available"
+
+    else Quiz Failed (percentage < passing_score) on Attempt 1
+        ProgressService->>LessonModel: Check for remediation variant
+        LessonModel->>Database: SELECT variant WHERE trigger=quiz_failed
+        Database-->>LessonModel: Return remedial lesson
+        ProgressService->>Database: Update progress.status = IN_REMEDIATION
+        Database-->>ProgressService: Confirm update
+        ProgressService->>Database: COMMIT TRANSACTION
+        ProgressService-->>QuizController: Return {passed: false, variant: lesson}
+        QuizController-->>StudentUI: Redirect to variant lesson
+        StudentUI-->>Student: "Review the simplified version before retrying"
+
+    else Quiz Failed on Attempt 2+
+        ProgressService->>Database: Update progress.status = STUCK
+        Database-->>ProgressService: Confirm update
+        ProgressService->>Notification: Send StudentStuckNotification to teacher
+        Notification->>Database: Log notification
+        Database-->>Notification: Confirm log
+        ProgressService->>Database: COMMIT TRANSACTION
+        Database-->>ProgressService: Return {passed: false, variant: null}
+        ProgressService-->>QuizController: Return stuck status
+        QuizController-->>StudentUI: Show result page
+        StudentUI-->>Student: "Teacher has been notified"
+    end
+
+---
+
+END OF QUIZ SUBMISSION AND REMEDIATION DIAGRAM
+
+
+================================================================================
+4. ADMIN CONTENT MANAGEMENT SEQUENCE DIAGRAM
+================================================================================
+Admin managing courses, lessons, quizzes, and their assignments to groups
+
+---
+
+sequenceDiagram
+    participant Admin as Admin User
+    participant AdminUI as Admin UI
+    participant AdminController as Admin\CourseController
+    participant LessonController as Admin\LessonController
+    participant QuestionController as Admin\QuestionController
+    participant CourseModel as Course Model
+    participant LessonModel as Lesson Model
+    participant GroupModel as Group Model
+    participant QuizModel as Quiz Model
+    participant Database as Database
+
+    Admin->>AdminUI: Navigate to Courses
+    AdminUI->>AdminController: GET /admin/courses
+    AdminController->>CourseModel: all()
+    CourseModel->>Database: SELECT all courses
+    Database-->>CourseModel: Return course list
+    AdminController-->>AdminUI: Display courses table
+
+    Admin->>AdminUI: Click Create New Course
+    AdminUI->>AdminUI: Open create form
+    Admin->>AdminUI: Fill course details
+    Admin->>AdminUI: Submit form
+    AdminUI->>AdminController: POST /admin/courses
+    AdminController->>CourseModel: create(title, description, category, level, teacher_id)
+    CourseModel->>Database: INSERT course
+    Database-->>CourseModel: Return course_id
+    AdminController-->>AdminUI: Redirect to course show
+    AdminUI-->>Admin: Display new course
+
+    Admin->>AdminUI: Click Assign Groups to Course
+    AdminUI->>AdminUI: Open group assignment modal
+    Admin->>AdminUI: Select groups (multi-select)
+    AdminUI->>AdminController: POST /admin/courses/{id}/assign-groups
+    AdminController->>CourseModel: load('groups')
+    AdminController->>GroupModel: sync(group_ids)
+    GroupModel->>Database: INSERT INTO course_group (course_id, group_id)
+    Database-->>GroupModel: Confirm insertions
+    GroupModel-->>AdminController: Return synced groups
+    AdminController-->>AdminUI: Redirect with success message
+    AdminUI-->>Admin: "Groups assigned successfully"
+
+    Admin->>AdminUI: Click Manage Lessons
+    AdminUI->>LessonController: GET /admin/courses/{id}/lessons
+    LessonController->>CourseModel: with('lessons').findOrFail(id)
+    LessonController->>LessonModel: orderBy('order').get()
+    LessonModel->>Database: SELECT lessons ORDER BY order
+    Database-->>LessonModel: Return ordered lessons
+    LessonController-->>AdminUI: Display lessons list
+    AdminUI-->>Admin: Show lessons with order
+
+    Admin->>AdminUI: Create New Lesson
+    AdminUI->>LessonController: POST /admin/lessons
+    AdminUI->>AdminUI: Enter title, order, content
+    Admin->>AdminUI: Submit lesson form
+    LessonController->>LessonModel: create(course_id, order, title, tag)
+    LessonModel->>Database: INSERT lesson
+    Database-->>LessonModel: Return lesson_id
+
+    par Upload Lesson Content
+        LessonController->>LessonModel: Store content blocks
+        LessonModel->>Database: INSERT INTO lesson_contents (lesson_id, type, value, order)
+        Database-->>LessonModel: Confirm insertions
+    and Upload PDFs
+        LessonController->>LessonModel: Store PDFs
+        LessonModel->>Database: INSERT INTO lesson_pdfs (lesson_id, pdf_path, order)
+        Database-->>LessonModel: Confirm insertions
+    end
+
+    LessonModel-->>LessonController: Return lesson with content
+    LessonController-->>AdminUI: Redirect to lesson show
+    AdminUI-->>Admin: "Lesson created successfully"
+
+    Admin->>AdminUI: Create Quiz for Lesson
+    AdminUI->>AdminUI: Click Add Quiz to Lesson
+    AdminUI->>QuizModel: POST /admin/quizzes
+    Admin->>AdminUI: Enter quiz title, passing_score
+    AdminUI->>QuizModel: create(lesson_id, title, passing_score, is_active)
+    QuizModel->>Database: INSERT quiz
+    Database-->>QuizModel: Return quiz_id
+    QuizModel-->>AdminUI: Display quiz show page
+
+    Admin->>AdminUI: Add Questions to Quiz
+    loop Add multiple questions
+        Admin->>AdminUI: Click Add Question
+        AdminUI->>AdminUI: Open question form
+        Admin->>AdminUI: Enter question text, media
+        AdminUI->>QuestionController: POST /admin/quizzes/{id}/questions
+        QuestionController->>Database: INSERT question
+        Database-->>QuestionController: Return question_id
+
+        par Add Options
+            AdminUI->>AdminUI: Add option 1 (correct)
+            QuestionController->>Database: INSERT option (is_correct=true)
+            AdminUI->>AdminUI: Add option 2
+            QuestionController->>Database: INSERT option (is_correct=false)
+            AdminUI->>AdminUI: Add option 3
+            QuestionController->>Database: INSERT option (is_correct=false)
+        end
+
+        Database-->>QuestionController: Confirm all options
+        QuestionController-->>AdminUI: Return question with options
+    end
+
+    Admin->>AdminUI: Save Quiz
+    AdminUI->>AdminUI: Review all questions and options
+    Admin->>AdminUI: Click Publish Quiz
+    QuizModel->>Database: UPDATE quiz SET is_active=true
+    Database-->>QuizModel: Confirm update
+    QuizModel-->>AdminUI: Display success message
+    AdminUI-->>Admin: "Quiz published and available to students"
+
+---
+
+END OF ADMIN CONTENT MANAGEMENT DIAGRAM
+
+
+================================================================================
+END OF ALL DIAGRAMS
+================================================================================
+
+NOTES:
+------
+- All Mermaid syntax is standard and compatible with mermaid-js library
+- The class diagram shows 18 models with all key attributes and relationships
+- The sequence diagrams represent the 3 main workflows:
+  1. Student Learning: Navigation through courses and lessons
+  2. Quiz & Remediation: Complete quiz lifecycle with branching logic
+  3. Admin Management: Course and content creation with group assignment
+- Database transactions ensure data consistency in quiz submission
+- Progress tracking uses multiple status states for comprehensive monitoring
+- Remediation variant system supports adaptive learning paths
+

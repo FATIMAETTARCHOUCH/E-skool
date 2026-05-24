@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FATI-PROJET - Diagrammes du Modèle de Données et des Flux de Travail</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        .diagram-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            page-break-inside: avoid;
+        }
+        .diagram-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 10px;
+            border-left: 5px solid #667eea;
+            padding-left: 15px;
+        }
+        .diagram-description {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 1em;
+            line-height: 1.6;
+        }
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+        }
+        @media print {
+            body {
+                background: white;
+            }
+            .diagram-section {
+                page-break-inside: avoid;
+                margin-bottom: 30px;
+            }
+        }
+        .footer {
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 FATI-PROJET</h1>
+        <div class="subtitle">Diagrammes du Modèle de Données et Flux de Travail de l'Application</div>
+
+            <!-- Use case diagram removed and moved to USE_CASE_DIAGRAM.mmd -->
+        course_id: int FK
+        order: int
+        title: string
+        tag: string
+    }
+
+    class LessonContent {
+        id: int PK
+        lesson_id: int FK
+        type: enum
+        value: text
+        order: int
+    }
+
+    class LessonVariant {
+        id: int PK
+        original_lesson_id: int FK
+        variant_lesson_id: int FK
+        trigger: enum(quiz_failed)
+    }
+
+    %% Quiz & Assessment
+    class Quiz {
+        id: int PK
+        lesson_id: int FK
+        title: string
+        passing_score: int
+        is_active: boolean
+    }
+
+    class Question {
+        id: int PK
+        quiz_id: int FK
+        content_text: text
+    }
+
+    class Option {
+        id: int PK
+        question_id: int FK
+        content_text: text
+        is_correct: boolean
+    }
+
+    class QuizRetake {
+        id: int PK
+        quiz_id: int FK
+        user_id: int FK
+        attempt_number: int
+        status: enum
+    }
+
+    class Answer {
+        id: int PK
+        user_id: int FK
+        question_id: int FK
+        option_id: int FK
+        quiz_retake_id: int FK
+    }
+
+    class Result {
+        id: int PK
+        user_id: int FK
+        quiz_id: int FK
+        quiz_retake_id: int FK
+        score: int
+        is_passed: boolean
+    }
+
+    %% Progress Tracking
+    class StudentProgress {
+        id: int PK
+        user_id: int FK
+        lesson_id: int FK
+        status: enum
+        completed_at: datetime
+    }
+
+    %% Communication
+    class Message {
+        id: int PK
+        sender_id: int FK
+        receiver_id: int FK
+        content: text
+    }
+
+    %% Relationships
+    School "1" --> "*" Branch
+    Branch "1" --> "*" Group
+    AcademicYear "1" --> "*" Group
+    Group "1" --> "*" User
+    User "1" --> "*" Course
+    User "1" --> "*" Message
+    User "1" --> "*" QuizRetake
+    User "1" --> "*" Result
+    User "1" --> "*" StudentProgress
+    Course "1" --> "*" Lesson
+    Lesson "1" --> "*" LessonContent
+    Lesson "1" --> "*" LessonVariant
+    Lesson "1" --> "*" Quiz
+    Lesson "1" --> "*" StudentProgress
+    Quiz "1" --> "*" Question
+    Quiz "1" --> "*" QuizRetake
+    Quiz "1" --> "*" Result
+    Question "1" --> "*" Option
+    Question "1" --> "*" Answer
+    Option "1" --> "*" Answer
+    QuizRetake "1" --> "*" Answer
+            </div>
+        </div>
+
+        <!-- Diagram 2: Student Learning Workflow -->
+        <div class="diagram-section">
+            <div class="diagram-title">2. Flux de Travail d'Apprentissage de l'Étudiant</div>
+            <div class="diagram-description">
+                Flux d'apprentissage principal montrant la navigation des étudiants depuis le tableau de bord → sélection du cours → visualisation de la leçon → préparation au quiz. Inclut l'initialisation du suivi de la progression et le contrôle d'accès séquentiel.
+            </div>
+            <div class="mermaid">
+sequenceDiagram
+    participant Student as 👤 Étudiant
+    participant StudentUI as 🖥️ Interface Étudiant
+    participant StudentController as 📱 StudentController
+    participant CourseModel as 📚 Modèle Cours
+    participant Database as 🗄️ Base de Données
+
+    Student->>StudentUI: Clique sur Tableau de bord
+    StudentUI->>StudentController: GET /student/dashboard
+    StudentController->>CourseModel: Récupère cours du groupe
+    CourseModel->>Database: SELECT courses
+    Database-->>CourseModel: Retourne liste des cours
+    CourseModel-->>StudentController: Retourne cours
+    StudentController-->>StudentUI: Affiche cours disponibles
+    StudentUI-->>Student: Affiche tableau de bord des cours
+
+    Student->>StudentUI: Clique sur un Cours
+    StudentUI->>StudentController: GET /student/courses/{id}
+    StudentController->>Database: Charge cours avec leçons
+    Database-->>StudentController: Retourne cours + leçons
+    StudentController->>Database: Récupère progression étudiant
+    Database-->>StudentController: Retourne enregistrements de progression
+    StudentController-->>StudentUI: Affiche cours avec leçons
+    StudentUI-->>Student: Affiche liste des leçons avec progression
+
+    Student->>StudentUI: Clique sur une Leçon
+    StudentUI->>StudentController: GET /student/lessons/{lesson}
+    StudentController->>Database: Charge leçon + quiz
+    Database-->>StudentController: Retourne données de leçon
+    StudentController->>Database: Marque leçon DÉVERROUILLÉE
+    Database-->>StudentController: Confirme mise à jour de la progression
+    StudentController-->>StudentUI: Affiche contenu de la leçon
+    StudentUI-->>Student: Affiche leçon avec bouton quiz
+            </div>
+        </div>
+
+        <!-- Diagram 3: Quiz Submission & Remediation -->
+        <div class="diagram-section">
+            <div class="diagram-title">3. Flux de Travail de Soumission et Remédiation du Quiz</div>
+            <div class="diagram-description">
+                Cycle complet du quiz avec logique de branchement : soumission réussie → déverrouillage de la leçon suivante ; premier échec → redirection vers une variante simplifiée ; deuxième échec → marquer BLOQUÉ et notifier l'enseignant. Utilise les transactions de base de données pour la cohérence.
+            </div>
+            <div class="mermaid">
+sequenceDiagram
+    participant Student as 👤 Étudiant
+    participant StudentUI as 🖥️ Interface Étudiant
+    participant QuizController as 📱 QuizController
+    participant ProgressService as ⚙️ Service Progression
+    participant Database as 🗄️ Base de Données
+    participant Notification as 📧 Système Notifications
+
+    Student->>StudentUI: Répond aux questions du quiz
+    StudentUI->>StudentUI: Collecte réponses (question → option)
+    Student->>StudentUI: Clique Soumettre Quiz
+    StudentUI->>QuizController: POST /student/quizzes/{quiz}/submit
+    
+    QuizController->>Database: Charge quiz + questions + options
+    Database-->>QuizController: Retourne données du quiz
+    
+    QuizController->>ProgressService: soumettreAttemptQuiz(étudiant, quiz, réponses)
+    ProgressService->>Database: DÉBUT TRANSACTION
+
+    ProgressService->>Database: Crée nouvelle tentative
+    Database-->>ProgressService: Retourne retake_id
+    
+    ProgressService->>Database: Enregistre toutes les réponses
+    Database-->>ProgressService: Confirme insertion
+    
+    ProgressService->>Database: Calcule score & insère Résultat
+    Database-->>ProgressService: Retourne résultat
+
+    alt Quiz Réussi (score >= seuil)
+        ProgressService->>Database: Mise à jour Progression = RÉUSSI
+        Database-->>ProgressService: Confirme
+        ProgressService->>Database: VALIDER TRANSACTION
+        ProgressService-->>QuizController: {passed: true, score: X}
+        QuizController->>Database: Trouve leçon suivante
+        Database-->>QuizController: Retourne leçon suivante
+        QuizController-->>StudentUI: Redirige vers leçon suivante
+        StudentUI-->>Student: "✅ Quiz réussi! Leçon suivante disponible"
+
+    else Premier Échec (score < seuil)
+        ProgressService->>Database: Trouve variante simplifiée
+        Database-->>ProgressService: Retourne leçon variante
+        ProgressService->>Database: Mise à jour Progression = EN_REMÉDIATION
+        ProgressService->>Database: VALIDER TRANSACTION
+        ProgressService-->>QuizController: {passed: false, variant: lesson}
+        QuizController-->>StudentUI: Redirige vers variante
+        StudentUI-->>Student: "⚠️ Consultez d'abord la version simplifiée"
+
+    else Deuxième Échec
+        ProgressService->>Database: Mise à jour Progression = BLOQUÉ
+        ProgressService->>Notification: Envoie Notification Étudiant Bloqué
+        Notification->>Database: Enregistre notification
+        ProgressService->>Database: VALIDER TRANSACTION
+        ProgressService-->>QuizController: {passed: false, stuck: true}
+        QuizController-->>StudentUI: Affiche page résultats
+        StudentUI-->>Student: "🔒 Votre enseignant a été notifié"
+    end
+            </div>
+        </div>
+
+        <!-- Diagram 4: Admin Content Management -->
+        <div class="diagram-section">
+            <div class="diagram-title">4. Flux de Travail de Gestion du Contenu pour l'Admin</div>
+            <div class="diagram-description">
+                Flux de travail administratif pour la création de contenu : création de cours → attribution de groupes → création de leçons avec contenu multimédia → création de quiz avec questions et options. Supporte la gestion complète du cycle de vie des cours.
+            </div>
+            <div class="mermaid">
+sequenceDiagram
+    participant Admin as 👨‍💼 Administrateur
+    participant AdminUI as 🖥️ Interface Admin
+    participant AdminController as 📱 Admin Controllers
+    participant Database as 🗄️ Base de Données
+
+    Admin->>AdminUI: Navigue vers Cours
+    AdminUI->>AdminController: GET /admin/courses
+    AdminController->>Database: SÉLECTIONNE tous les cours
+    Database-->>AdminUI: Affiche tableau des cours
+
+    Admin->>AdminUI: Crée un Nouveau Cours
+    AdminUI->>AdminUI: Ouvre le formulaire de création
+    Admin->>AdminUI: Remplit détails du cours
+    AdminUI->>AdminController: POST /admin/courses
+    AdminController->>Database: INSÈRE cours
+    Database-->>AdminUI: Affiche nouveau cours
+
+    Admin->>AdminUI: Attribue Groupes au Cours
+    AdminUI->>AdminUI: Sélectionne groupes (multi-sélect)
+    AdminUI->>AdminController: POST assign-groups
+    AdminController->>Database: INSÈRE DANS course_group
+    Database-->>AdminUI: "✅ Groupes attribués"
+
+    Admin->>AdminUI: Gère Leçons
+    AdminUI->>AdminController: GET /admin/courses/{id}/lessons
+    AdminController->>Database: SÉLECTIONNE leçons ORDONNÉES PAR order
+    Database-->>AdminUI: Affiche liste des leçons
+
+    Admin->>AdminUI: Crée une Leçon
+    AdminUI->>AdminUI: Saisit titre, ordre, contenu
+    AdminUI->>AdminController: POST /admin/lessons
+    AdminController->>Database: INSÈRE leçon
+
+    par Télécharge Contenu
+        AdminController->>Database: Enregistre blocs contenu (texte/pdf/vidéo/image)
+        Database-->>AdminController: Confirme contenu
+    and Enregistre PDFs
+        AdminController->>Database: Enregistre PDFs leçon
+        Database-->>AdminController: Confirme PDFs
+    end
+
+    Admin->>AdminUI: Crée un Quiz
+    AdminUI->>AdminUI: Saisit titre quiz, seuil de réussite
+    AdminUI->>AdminController: POST /admin/quizzes
+    AdminController->>Database: INSÈRE quiz
+    Database-->>AdminUI: Affiche éditeur quiz
+
+    Admin->>AdminUI: Ajoute Questions au Quiz
+    loop Ajoute plusieurs questions
+        Admin->>AdminUI: Saisit question + média
+        AdminUI->>AdminController: POST question
+        AdminController->>Database: INSÈRE question
+
+        par Ajoute Options
+            AdminController->>Database: Option 1 (is_correct=true)
+            AdminController->>Database: Option 2 (is_correct=false)
+            AdminController->>Database: Option 3 (is_correct=false)
+        end
+    end
+
+    Admin->>AdminUI: Publie Quiz
+    AdminUI->>AdminController: POST publish
+    AdminController->>Database: MISE À JOUR quiz SET is_active=true
+    Database-->>AdminUI: "✅ Quiz publié"
+            </div>
+        </div>
+
+        <!-- Use case diagram removed and moved to USE_CASE_DIAGRAM.mmd -->
+
+        <div class="footer">
+            <p>FATI-PROJET • Modèle de Données de Plateforme Éducative et Flux de Travail</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">Généré: Mai 2026</p>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'default', securityLevel: 'loose' });
+        mermaid.contentLoaded();
+    </script>
+</body>
+</html>
