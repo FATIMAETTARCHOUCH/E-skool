@@ -11,51 +11,51 @@ class StudentProgressController extends Controller
 {
     public function index(Group $group)
     {
-        $group->load('courses.lessons.quizzes');
+        $group->load('courses.chapters.quizzes');
 
         $students = User::where('role', 'student')
             ->where('group_id', $group->id)
-            ->with(['results.quiz.lesson', 'results.retake', 'group'])
+            ->with(['results.quiz.chapter', 'results.retake', 'group'])
             ->orderBy('first_name')
             ->get();
 
-        $lessons = $group->courses
-            ->flatMap(fn ($course) => $course->lessons)
+        $chapters = $group->courses
+            ->flatMap(fn ($course) => $course->chapters)
             ->sortBy('order')
             ->values();
 
         $progresses = StudentProgress::whereIn('user_id', $students->pluck('id'))
-            ->whereIn('lesson_id', $lessons->pluck('id'))
+            ->whereIn('chapter_id', $chapters->pluck('id'))
             ->get()
             ->groupBy('user_id');
 
         return view('admin.progress.index', [
             'group' => $group,
             'students' => $students,
-            'lessons' => $lessons,
+            'chapters' => $chapters,
             'progresses' => $progresses,
         ]);
     }
 
     public function show(User $student)
     {
-        $student->load(['group.courses.lessons.quizzes', 'results.quiz.lesson', 'results.retake', 'group.branch.school']);
+        $student->load(['group.courses.chapters.quizzes', 'results.quiz.chapter', 'results.retake', 'group.branch.school']);
 
-        $lessons = $student->group
-            ? $student->group->courses->flatMap(fn ($course) => $course->lessons)->sortBy('order')->values()
+        $chapters = $student->group
+            ? $student->group->courses->flatMap(fn ($course) => $course->chapters)->sortBy('order')->values()
             : collect();
 
-        $progresses = StudentProgress::where('user_id', $student->id)->get()->keyBy('lesson_id');
+        $progresses = StudentProgress::where('user_id', $student->id)->get()->keyBy('chapter_id');
 
-        $attemptsByLesson = $student->results
-            ->sortBy(fn ($result) => [$result->quiz?->lesson_id ?? 0, $result->attempt_number])
-            ->groupBy(fn ($result) => $result->quiz?->lesson_id);
+        $attemptsByChapter = $student->results
+            ->sortBy(fn ($result) => [$result->quiz?->chapter_id ?? 0, $result->attempt_number])
+            ->groupBy(fn ($result) => $result->quiz?->chapter_id);
 
         return view('admin.progress.show', [
             'student' => $student,
-            'lessons' => $lessons,
+            'chapters' => $chapters,
             'progresses' => $progresses,
-            'attemptsByLesson' => $attemptsByLesson,
+            'attemptsByChapter' => $attemptsByChapter,
         ]);
     }
 }

@@ -20,13 +20,13 @@
         </div>
 
         <div>
-            <x-input-label for="lesson_id" value="quizzes.lesson_id - Associated Lesson" />
-            <select name="lesson_id" id="lesson_id" required class="block w-full mt-1 bg-white/50 border border-slate-200 rounded-2xl py-4 px-6 text-slate-700 font-medium">
-                @foreach($lessons as $lesson)
-                    <option value="{{ $lesson->id }}">{{ $lesson->title }} ({{ $lesson->course ? $lesson->course->groups->pluck('name')->implode(', ') : 'No Groups' }})</option>
+            <x-input-label for="chapter_id" value="quizzes.chapter_id - Associated Chapter" />
+            <select name="chapter_id" id="chapter_id" required class="block w-full mt-1 bg-white/50 border border-slate-200 rounded-2xl py-4 px-6 text-slate-700 font-medium">
+                @foreach($chapters as $chapter)
+                    <option value="{{ $chapter->id }}">{{ $chapter->title }} ({{ $chapter->course ? $chapter->course->groups->pluck('name')->implode(', ') : 'No Groups' }})</option>
                 @endforeach
             </select>
-            <p class="text-[10px] text-slate-400 mt-2 italic">Links to lessons table. All groups assigned to this lesson will see this quiz.</p>
+            <p class="text-[10px] text-slate-400 mt-2 italic">Links to chapters table. All groups assigned to this chapter will see this quiz.</p>
         </div>
 
         <div>

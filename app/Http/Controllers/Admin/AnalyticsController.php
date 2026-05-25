@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Group;
-use App\Models\Lesson;
+use App\Models\Chapter;
 use App\Models\Quiz;
 use App\Models\Result;
 use App\Models\StudentProgress;
@@ -43,25 +43,28 @@ class AnalyticsController extends Controller
 
     public function studentProfile($id)
     {
-        $student = User::with(['group.courses.lessons', 'results.quiz.lesson'])->findOrFail($id);
+        $student = User::with(['group.courses.chapters', 'results.quiz.chapter'])->findOrFail($id);
         
         $assignedCourses = $student->group ? $student->group->courses : collect([]);
-        $assignedLessons = collect([]);
+        $assignedChapters = collect([]);
         foreach($assignedCourses as $course) {
-            $assignedLessons = $assignedLessons->merge($course->lessons);
+            $assignedChapters = $assignedChapters->merge($course->chapters);
         }
 
-        $progresses = StudentProgress::where('user_id', $student->id)->get()->keyBy('lesson_id');
-        $completedLessonIds = $progresses->where('is_completed', true)->keys()->toArray();
+        $progresses = StudentProgress::where('user_id', $student->id)->get()->keyBy('chapter_id');
+        $completedChapterIds = $progresses
+            ->filter(fn ($p) => in_array($p->status, \App\Models\StudentProgress::completedStatuses(), true))
+            ->keys()
+            ->toArray();
         
-        $lessonsNotRead = $assignedLessons->filter(fn($l) => !in_array($l->id, $completedLessonIds));
+        $chaptersNotRead = $assignedChapters->filter(fn($l) => !in_array($l->id, $completedChapterIds));
         
         // Quiz Stats
         $quizzesTakenIds = $student->results->pluck('quiz_id')->toArray();
-        $allPossibleQuizzes = Quiz::whereIn('lesson_id', $assignedLessons->pluck('id'))->get();
+        $allPossibleQuizzes = Quiz::whereIn('chapter_id', $assignedChapters->pluck('id'))->get();
         $quizzesNotTaken = $allPossibleQuizzes->filter(fn($q) => !in_array($q->id, $quizzesTakenIds));
 
-        return view('admin.analytics.student_profile', compact('student', 'assignedCourses', 'lessonsNotRead', 'quizzesNotTaken', 'progresses'));
+        return view('admin.analytics.student_profile', compact('student', 'assignedCourses', 'chaptersNotRead', 'quizzesNotTaken', 'progresses'));
     }
 
     public function resetQuizzes($id)
@@ -71,7 +74,7 @@ class AnalyticsController extends Controller
         // Delete all results
         Result::where('user_id', $student->id)->delete();
         
-        // Delete all student progress (lesson completion)
+        // Delete all student progress (chapter completion)
         StudentProgress::where('user_id', $student->id)->delete();
 
         // Optional: Delete answers if you have an Answer model linked to user
@@ -96,10 +99,10 @@ class AnalyticsController extends Controller
         // Delete the result itself
         $result->delete();
 
-        // Optional: Remove progress for the lesson linked to this quiz
+        // Optional: Remove progress for the chapter linked to this quiz
         $quiz = Quiz::find($quizId);
         if ($quiz) {
-            StudentProgress::where('user_id', $userId)->where('lesson_id', $quiz->lesson_id)->delete();
+            StudentProgress::where('user_id', $userId)->where('chapter_id', $quiz->chapter_id)->delete();
         }
 
         return redirect()->back()->with('success', "Le résultat de l'examen a été supprimé.");

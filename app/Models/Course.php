@@ -22,9 +22,9 @@ class Course extends Model
         return $this->belongsToMany(Group::class, 'course_group');
     }
 
-    public function lessons() // Acting as CourseParts
+    public function chapters()
     {
-        return $this->hasMany(Lesson::class)->orderBy('order', 'asc');
+        return $this->hasMany(Chapter::class)->orderBy('order', 'asc');
     }
 
     public function teacher()

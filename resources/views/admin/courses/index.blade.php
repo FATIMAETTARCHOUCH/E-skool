@@ -17,7 +17,7 @@
                     <tr class="text-gray-500 text-xs uppercase tracking-wide font-medium border-b border-gray-100 bg-gray-50">
                         <th class="px-6 py-3">Titre</th>
                         <th class="px-6 py-3">Groupes</th>
-                        <th class="px-6 py-3">Leçons</th>
+                        <th class="px-6 py-3">Chapitres</th>
                         <th class="px-6 py-3 text-right">Actions</th>
                     </tr>
                 </thead>
@@ -43,12 +43,12 @@
                             @endif
                         </td>
                         <td class="px-6 py-4">
-                            <span class="px-3 py-1 rounded-md bg-indigo-50 text-indigo-700 text-xs font-medium border border-indigo-200">{{ $course->lessons->count() }}</span>
+                            <span class="px-3 py-1 rounded-md bg-indigo-50 text-indigo-700 text-xs font-medium border border-indigo-200">{{ $course->chapters->count() }}</span>
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex justify-end gap-2">
-                                <a href="{{ route('admin.courses.show', $course) }}" class="px-3 py-1.5 rounded-md bg-indigo-50 text-indigo-600 hover:bg-indigo-100 text-xs font-bold uppercase border border-indigo-200 transition" title="Gérer les leçons">
-                                    Leçons
+                                <a href="{{ route('admin.courses.show', $course) }}" class="px-3 py-1.5 rounded-md bg-indigo-50 text-indigo-600 hover:bg-indigo-100 text-xs font-bold uppercase border border-indigo-200 transition" title="Gérer les chapitres">
+                                    Chapitres
                                 </a>
                                 <a href="{{ route('admin.courses.edit', $course) }}" class="px-3 py-1.5 rounded-md bg-indigo-50 text-indigo-600 hover:bg-indigo-100 text-xs font-bold uppercase border border-indigo-200 transition">
                                     Modifier

@@ -38,7 +38,7 @@ class CourseController extends Controller
 
     public function show(Course $course)
     {
-        $course->load(['lessons.contents', 'groups']);
+        $course->load(['chapters.resources', 'groups']);
         return view('admin.courses.show', compact('course'));
     }
 

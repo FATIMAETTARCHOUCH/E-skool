@@ -23,7 +23,7 @@
                 <thead>
                     <tr class="text-gray-500 uppercase text-xs tracking-wide font-medium border-b border-gray-100 bg-gray-50">
                         <th class="px-6 py-3">quizzes.title, quizzes.id</th>
-                        <th class="px-6 py-3">quizzes.lesson_id (lessons)</th>
+                        <th class="px-6 py-3">quizzes.chapter_id (chapters)</th>
                         <th class="px-6 py-3">quizzes.is_active</th>
                         <th class="px-6 py-3 text-right">Operations</th>
                     </tr>
@@ -36,10 +36,10 @@
                             <div class="text-xs text-gray-400 font-semibold mt-1">quizzes.id: #{{ $quiz->id }} | quizzes.passing_score: {{ $quiz->passing_score }}%</div>
                         </td>
                         <td class="px-6 py-4">
-                            <div class="text-sm font-medium text-gray-700">{{ $quiz->lesson->title }}</div>
+                            <div class="text-sm font-medium text-gray-700">{{ $quiz->chapter->title }}</div>
                             <div class="flex flex-wrap gap-1 mt-1">
-                                @if($quiz->lesson->course)
-                                    @foreach($quiz->lesson->course->groups as $group)
+                                @if($quiz->chapter->course)
+                                    @foreach($quiz->chapter->course->groups as $group)
                                     <span class="text-[10px] text-indigo-700 font-semibold bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">
                                         {{ $group->name }}
                                     </span>
@@ -94,12 +94,12 @@
                 <x-input-label value="Evaluation Title" />
                 <x-text-input name="title" id="edit_quiz_title" required class="w-full mt-1" />
             </div>
-            @php $lessons = \App\Models\Lesson::with('course.groups')->get(); @endphp
+            @php $chapters = \App\Models\Chapter::with('course.groups')->get(); @endphp
             <div>
                 <x-input-label value="Linked Module" />
-                <select name="lesson_id" id="edit_lesson_id" class="block w-full mt-1 bg-gray-50 border border-gray-200 focus:border-indigo-400 focus:outline-none focus:bg-white rounded-lg py-2.5 px-4 text-gray-700 text-sm transition">
-                    @foreach($lessons as $lesson)
-                        <option value="{{ $lesson->id }}">{{ $lesson->title }} ({{ $lesson->course->title ?? 'No Course' }})</option>
+                <select name="chapter_id" id="edit_chapter_id" class="block w-full mt-1 bg-gray-50 border border-gray-200 focus:border-indigo-400 focus:outline-none focus:bg-white rounded-lg py-2.5 px-4 text-gray-700 text-sm transition">
+                    @foreach($chapters as $chapter)
+                        <option value="{{ $chapter->id }}">{{ $chapter->title }} ({{ $chapter->course->title ?? 'No Course' }})</option>
                     @endforeach
                 </select>
             </div>
@@ -127,7 +127,7 @@
     function openEditQuizModal(quiz) {
         document.getElementById('edit-quiz-form').action = `/admin/quizzes/${quiz.id}`;
         document.getElementById('edit_quiz_title').value = quiz.title;
-        document.getElementById('edit_lesson_id').value = quiz.lesson_id;
+        document.getElementById('edit_chapter_id').value = quiz.chapter_id;
         document.getElementById('edit_passing_score').value = quiz.passing_score;
         document.getElementById('edit_quiz_active').checked = quiz.is_active;
         document.getElementById('edit-quiz-modal').classList.remove('hidden');

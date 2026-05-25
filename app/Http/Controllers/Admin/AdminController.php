@@ -13,7 +13,7 @@ class AdminController extends Controller
         
         $stats = [
             'total_students' => \App\Models\User::where('role', 'student')->count(),
-            'total_lessons' => \App\Models\Lesson::count(),
+            'total_chapters' => \App\Models\Chapter::count(),
             'total_quizzes' => \App\Models\Quiz::count(),
             'average_score' => \App\Models\Result::avg('score') ?? 0,
             'total_groups' => \App\Models\Group::count(),

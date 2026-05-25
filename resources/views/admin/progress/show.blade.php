@@ -14,15 +14,15 @@
         </div>
 
         <div class="space-y-4">
-            @foreach($lessons as $lesson)
+            @foreach($chapters as $chapter)
                 @php
-                    $progress = $progresses->get($lesson->id);
-                    $attempts = $attemptsByLesson->get($lesson->id, collect());
+                    $progress = $progresses->get($chapter->id);
+                    $attempts = $attemptsByChapter->get($chapter->id, collect());
                 @endphp
                 <details class="bg-white rounded-lg border border-gray-200 overflow-hidden">
                     <summary class="cursor-pointer px-6 py-4 flex items-center justify-between">
                         <div>
-                            <div class="font-bold text-gray-900">{{ $lesson->title }}</div>
+                            <div class="font-bold text-gray-900">{{ $chapter->title }}</div>
                             <div class="text-xs text-gray-500 mt-0.5">Status: {{ $progress->status ?? 'locked' }}</div>
                         </div>
                         <div class="text-sm text-gray-500">{{ $attempts->count() }} attempt(s)</div>

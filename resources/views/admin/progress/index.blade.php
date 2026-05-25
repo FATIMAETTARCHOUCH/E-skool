@@ -19,7 +19,7 @@
                     <thead>
                         <tr class="text-gray-500 text-xs uppercase tracking-wide font-medium border-b border-gray-100 bg-gray-50">
                             <th class="px-6 py-3">Student name</th>
-                            <th class="px-6 py-3">Lesson name</th>
+                            <th class="px-6 py-3">Chapter name</th>
                             <th class="px-6 py-3">Status</th>
                             <th class="px-6 py-3">Attempts</th>
                             <th class="px-6 py-3">Last score</th>
@@ -27,12 +27,12 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         @foreach($students as $student)
-                            @foreach($lessons as $lesson)
+                            @foreach($chapters as $chapter)
                                 @php
-                                    $progress = optional($progresses->get($student->id))->firstWhere('lesson_id', $lesson->id);
+                                    $progress = optional($progresses->get($student->id))->firstWhere('chapter_id', $chapter->id);
                                     $status = $progress->status ?? 'locked';
-                                    $attempts = $student->results->where('quiz.lesson_id', $lesson->id)->count();
-                                    $lastScore = optional($student->results->where('quiz.lesson_id', $lesson->id)->sortByDesc('attempt_number')->first())->score;
+                                    $attempts = $student->results->where('quiz.chapter_id', $chapter->id)->count();
+                                    $lastScore = optional($student->results->where('quiz.chapter_id', $chapter->id)->sortByDesc('attempt_number')->first())->score;
                                     $badgeClass = 'bg-gray-100 text-gray-700 border-gray-200';
 
                                     if ($status === 'in_remediation') {
@@ -47,7 +47,7 @@
                                 @endphp
                                 <tr class="hover:bg-gray-50 transition-colors">
                                     <td class="px-6 py-4 font-bold text-gray-900">{{ $student->first_name }} {{ $student->last_name }}</td>
-                                    <td class="px-6 py-4 text-gray-700">{{ $lesson->title }}</td>
+                                    <td class="px-6 py-4 text-gray-700">{{ $chapter->title }}</td>
                                     <td class="px-6 py-4">
                                         <span class="px-3 py-1 rounded-md text-xs font-medium uppercase border {{ $badgeClass }}">
                                             {{ $status }}

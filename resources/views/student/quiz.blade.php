@@ -3,7 +3,7 @@
 @section('header')
     <div class="flex items-center justify-between gap-6">
         <div class="flex items-center gap-6">
-            <a href="{{ route('student.lesson', $quiz->lesson_id) }}" class="w-12 h-12 rounded-2xl glass flex items-center justify-center text-slate-500 hover:text-brand-600 transition-all border border-white/40 shadow-sm">
+            <a href="{{ route('student.chapter', $quiz->chapter_id) }}" class="w-12 h-12 rounded-2xl glass flex items-center justify-center text-slate-500 hover:text-brand-600 transition-all border border-white/40 shadow-sm">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M6 18L18 6M6 6l12 12"></path></svg>
             </a>
             <div>
@@ -136,7 +136,7 @@
             </button>
             <p id="validation-msg" class="text-xs font-black text-red-500 uppercase tracking-widest animate-pulse">Complete all modules to unlock submission</p>
             @else
-            <a href="{{ route('student.course', $quiz->lesson->course_id) }}" class="px-16 py-8 rounded-[2.5rem] glass border border-white/60 text-slate-900 font-black uppercase tracking-[0.3em] text-xl hover:bg-white transition-all shadow-glass">
+            <a href="{{ route('student.course', $quiz->chapter->course_id) }}" class="px-16 py-8 rounded-[2.5rem] glass border border-white/60 text-slate-900 font-black uppercase tracking-[0.3em] text-xl hover:bg-white transition-all shadow-glass">
                 Back to Course
             </a>
             @endif

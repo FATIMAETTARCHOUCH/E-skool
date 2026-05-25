@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Enums\StudentProgressStatus;
 use App\Models\Answer;
-use App\Models\Lesson;
+use App\Models\Chapter;
 use App\Models\Quiz;
 use App\Models\QuizRetake;
 use App\Models\Result;
@@ -15,17 +15,21 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 
-class LessonProgressService
+class ChapterProgressService
 {
-    public function startLesson(User $student, Lesson $lesson): StudentProgress
+    public function startChapter(User $student, Chapter $chapter): StudentProgress
     {
         $progress = StudentProgress::firstOrCreate([
             'user_id' => $student->id,
-            'lesson_id' => $lesson->id,
+            'chapter_id' => $chapter->id,
         ], [
             'status' => StudentProgressStatus::IN_PROGRESS->value,
             'unlocked_at' => Carbon::now(),
         ]);
+
+        if ($progress->hasPassedChapter() || $progress->isStuck()) {
+            return $progress;
+        }
 
         if ($progress->status === StudentProgressStatus::LOCKED->value) {
             $progress->status = StudentProgressStatus::IN_PROGRESS->value;
@@ -108,10 +112,10 @@ class LessonProgressService
             ]);
 
             // Update student progress
-            $lesson = $quiz->lesson;
+            $chapter = $quiz->chapter;
             $progress = StudentProgress::firstOrCreate([
                 'user_id' => $student->id,
-                'lesson_id' => $lesson->id,
+                'chapter_id' => $chapter->id,
             ], [
                 'status' => StudentProgressStatus::UNLOCKED->value,
                 'unlocked_at' => Carbon::now(),
@@ -123,81 +127,75 @@ class LessonProgressService
                 } else {
                     $progress->status = StudentProgressStatus::PASSED_WITH_HELP->value;
                 }
+                $progress->needs_remediation = false;
+                $progress->quiz_blocked_until = null;
                 $progress->completed_at = Carbon::now();
                 $progress->save();
+
                 return ['passed' => true, 'score' => $percentage, 'retake' => $retakeModel, 'result' => $result];
             }
 
             // Not passed
             if ($retakeModel->attempt_number <= 1) {
-                $variant = $this->redirectToVariant($student, $lesson);
-                return ['passed' => false, 'score' => $percentage, 'retake' => $retakeModel, 'variant' => $variant];
+                // Mark progress to indicate remediation is needed
+                $progress->needs_remediation = true;
+                $progress->status = StudentProgressStatus::IN_REMEDIATION->value;
+                $progress->save();
+
+                return ['passed' => false, 'score' => $percentage, 'retake' => $retakeModel];
             }
 
-            // attempt 2+ failed => mark stuck
-            $this->markAsStuck($student, $lesson);
+            // attempt 2+ failed => mark stuck and block quiz for 34 hours
+            $this->markAsStuck($student, $chapter);
             $progress->status = StudentProgressStatus::STUCK->value;
+            $progress->quiz_blocked_until = Carbon::now()->addHours(StudentProgress::QUIZ_BLOCK_HOURS);
             $progress->save();
 
-            return ['passed' => false, 'score' => $percentage, 'retake' => $retakeModel, 'variant' => null];
+            return ['passed' => false, 'score' => $percentage, 'retake' => $retakeModel, 'blocked_until' => $progress->quiz_blocked_until];
         });
     }
 
-    public function redirectToVariant(User $student, Lesson $lesson): ?Lesson
+    public function getChapterProgress(User $student, Chapter $chapter): ?StudentProgress
     {
-        $variant = $lesson->getRemediationVariant();
-        // update progress to in_remediation
-        $progress = StudentProgress::firstOrCreate([
-            'user_id' => $student->id,
-            'lesson_id' => $lesson->id,
-        ]);
-        $progress->status = StudentProgressStatus::IN_REMEDIATION->value;
-        $progress->save();
-
-        return $variant;
+        return StudentProgress::where('user_id', $student->id)
+            ->where('chapter_id', $chapter->id)
+            ->first();
     }
 
-    public function startRemediation(User $student, Lesson $originalLesson): void
+    public function canTakeQuiz(User $student, Quiz $quiz): array
     {
-        $variant = $originalLesson->getRemediationVariant();
-        if (! $variant) return;
+        $progress = $this->getChapterProgress($student, $quiz->chapter);
 
-        // mark original as in_remediation
-        $origProgress = StudentProgress::firstOrCreate([
-            'user_id' => $student->id,
-            'lesson_id' => $originalLesson->id,
-        ]);
-        $origProgress->status = StudentProgressStatus::IN_REMEDIATION->value;
-        $origProgress->save();
-
-        // ensure variant progress exists and mark as in_progress
-        $variantProgress = StudentProgress::firstOrCreate([
-            'user_id' => $student->id,
-            'lesson_id' => $variant->id,
-        ], [
-            'status' => StudentProgressStatus::IN_PROGRESS->value,
-            'unlocked_at' => Carbon::now(),
-        ]);
-
-        if ($variantProgress->status === StudentProgressStatus::UNLOCKED->value) {
-            $variantProgress->status = StudentProgressStatus::IN_PROGRESS->value;
-            $variantProgress->save();
+        if ($progress?->hasPassedChapter()) {
+            return ['allowed' => false, 'reason' => 'passed'];
         }
+
+        if ($progress?->isQuizBlocked()) {
+            return [
+                'allowed' => false,
+                'reason' => 'blocked',
+                'blocked_until' => $progress->quiz_blocked_until,
+                'hours_remaining' => $progress->quizBlockedRemainingHours(),
+            ];
+        }
+
+        return ['allowed' => true, 'reason' => null];
     }
 
-    private function markAsStuck(User $student, Lesson $lesson): void
+    private function markAsStuck(User $student, Chapter $chapter): void
     {
         $progress = StudentProgress::firstOrCreate([
             'user_id' => $student->id,
-            'lesson_id' => $lesson->id,
+            'chapter_id' => $chapter->id,
         ]);
         $progress->status = StudentProgressStatus::STUCK->value;
+        $progress->quiz_blocked_until = Carbon::now()->addHours(StudentProgress::QUIZ_BLOCK_HOURS);
         $progress->save();
 
         // notify the course teacher if exists
-        $teacher = $lesson->course?->teacher;
+        $teacher = $chapter->course?->teacher;
         if ($teacher) {
-            Notification::send($teacher, new StudentStuckNotification($student, $lesson));
+            Notification::send($teacher, new StudentStuckNotification($student, $chapter));
         }
     }
 

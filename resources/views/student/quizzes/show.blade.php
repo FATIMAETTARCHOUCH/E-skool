@@ -3,7 +3,7 @@
 @section('header')
     <div class="flex items-center justify-between gap-6 max-w-[95%] mx-auto">
         <div class="flex items-center gap-6">
-            <a href="{{ route('student.lesson', $quiz->lesson_id) }}" class="w-12 h-12 rounded-2xl glass flex items-center justify-center text-slate-500 hover:text-brand-600 transition-all border border-white/40 shadow-sm">
+            <a href="{{ route('student.chapter', $quiz->chapter_id) }}" class="w-12 h-12 rounded-2xl glass flex items-center justify-center text-slate-500 hover:text-brand-600 transition-all border border-white/40 shadow-sm">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M6 18L18 6M6 6l12 12"></path></svg>
             </a>
             <div>

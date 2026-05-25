@@ -50,7 +50,7 @@
                                 {{ $result->quiz->title ?? 'Untitled Assessment' }}
                             </div>
                             <p class="text-[10px] text-slate-400 font-bold uppercase mt-2 tracking-tighter italic">
-                                Linked Module: {{ $result->quiz->lesson->title ?? 'N/A' }}
+                                Linked Module: {{ $result->quiz->chapter->title ?? 'N/A' }}
                             </p>
                         </td>
                         <td class="px-6 py-6 text-center">

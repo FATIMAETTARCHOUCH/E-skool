@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Course;
-use App\Models\Lesson;
+use App\Models\Chapter;
 use App\Models\Quiz;
 use App\Models\Result;
 use App\Models\Answer;
@@ -25,36 +25,38 @@ class StudentController extends Controller
 
     public function course($id)
     {
-        $course = Course::with(['lessons' => function($q) {
+        $course = Course::with(['chapters' => function($q) {
             $q->orderBy('order', 'asc');
         }])->findOrFail($id);
 
         $user = auth()->user();
         $progress = StudentProgress::where('user_id', $user->id)
-            ->whereIn('lesson_id', $course->lessons->pluck('id'))
-            ->get()->keyBy('lesson_id');
+            ->whereIn('chapter_id', $course->chapters->pluck('id'))
+            ->get()->keyBy('chapter_id');
 
         return view('student.course', compact('course', 'progress'));
     }
 
-    public function lesson($id)
+    public function chapter($id)
     {
-        // Load all quizzes; visibility is based on lesson access and quiz existence.
-        $lesson = Lesson::with('quizzes')->findOrFail($id);
+        // Load all quizzes; visibility is based on chapter access and quiz existence.
+        $chapter = Chapter::with(['quiz', 'resources' => function ($q) {
+            $q->orderBy('order');
+        }])->findOrFail($id);
         
-        $course = $lesson->course;
+        $course = $chapter->course;
         $user = auth()->user();
 
         // Ensure previous part was completed (if order > 1)
-        if ($lesson->order > 1) {
-            $previousLesson = Lesson::where('course_id', $course->id)
-                                    ->where('order', '<', $lesson->order)
+        if ($chapter->order > 1) {
+            $previousChapter = Chapter::where('course_id', $course->id)
+                                    ->where('order', '<', $chapter->order)
                                     ->orderBy('order', 'desc')
                                     ->first();
             
-            if ($previousLesson) {
+            if ($previousChapter) {
                 $prevProgress = StudentProgress::where('user_id', $user->id)
-                                               ->where('lesson_id', $previousLesson->id)
+                                               ->where('chapter_id', $previousChapter->id)
                                                ->first();
                 
                 if (!$prevProgress || !$prevProgress->is_completed) {
@@ -64,7 +66,9 @@ class StudentController extends Controller
             }
         }
 
-        return view('student.lesson', compact('lesson', 'course'));
+        $quiz = $chapter->quizzes->first();
+
+        return view('student.chapters.show', compact('chapter', 'course', 'quiz'));
     }
 
     public function quiz($id)
@@ -168,11 +172,11 @@ class StudentController extends Controller
 
         if ($isPassed) {
             StudentProgress::updateOrCreate(
-                ['user_id' => $user->id, 'lesson_id' => $quiz->lesson_id],
+                ['user_id' => $user->id, 'chapter_id' => $quiz->chapter_id],
                 ['is_completed' => true, 'unlocked_at' => now()]
             );
 
-            return redirect()->route('student.course', $quiz->lesson->course_id)->with([
+            return redirect()->route('student.course', $quiz->chapter->course_id)->with([
                 'success' => 'Quizz réussi ! Vous avez validé cette partie.',
                 'quiz_result' => [
                     'score' => $score,
@@ -182,21 +186,21 @@ class StudentController extends Controller
             ]);
         } else {
             // Recommendation rule: use the explicit parent-variant relationship
-            $currentLesson = $quiz->lesson;
+            $currentChapter = $quiz->chapter;
             
-            // If current lesson is a variant, get the parent's simplest variant
-            // Otherwise, if current lesson is a parent, get its simplest variant
-            $simplestLesson = null;
+            // If current chapter is a variant, get the parent's simplest variant
+            // Otherwise, if current chapter is a parent, get its simplest variant
+            $simplestChapter = null;
             
-            if ($currentLesson->parent_lesson_id) {
-                // Current lesson is a variant; get simplest variant of the parent
-                $simplestLesson = $currentLesson->parent()->first()?->getSimplestVariant();
+            if ($currentChapter->parent_chapter_id) {
+                // Current chapter is a variant; get simplest variant of the parent
+                $simplestChapter = $currentChapter->parent()->first()?->getSimplestVariant();
             } else {
-                // Current lesson is a parent; get its simplest variant
-                $simplestLesson = $currentLesson->getSimplestVariant();
+                // Current chapter is a parent; get its simplest variant
+                $simplestChapter = $currentChapter->getSimplestVariant();
             }
 
-            $redirect = redirect()->route('student.lesson', $quiz->lesson_id)
+            $redirect = redirect()->route('student.chapter', $quiz->chapter_id)
                 ->with('error', "Vous avez obtenu $currentPercentage%. Le seuil est de $passingScorePercentage%. Veuillez réviser et réessayer.")
                 ->with('quiz_result', [
                     'score' => $score,
@@ -204,9 +208,9 @@ class StudentController extends Controller
                     'percentage' => $currentPercentage
                 ]);
 
-            if ($simplestLesson) {
-                $redirect = $redirect->with('recommended_lesson_id', $simplestLesson->id)
-                    ->with('recommended_lesson_title', $simplestLesson->title);
+            if ($simplestChapter) {
+                $redirect = $redirect->with('recommended_chapter_id', $simplestChapter->id)
+                    ->with('recommended_chapter_title', $simplestChapter->title);
             }
 
             return $redirect;
@@ -216,7 +220,7 @@ class StudentController extends Controller
     public function analytics()
     {
         $user = auth()->user();
-        $results = Result::where('user_id', $user->id)->with('quiz.lesson.course')->get();
+        $results = Result::where('user_id', $user->id)->with('quiz.chapter.course')->get();
         
         $averageScore = $results->count() > 0 ? $results->avg(function($r) {
             return $r->total_questions > 0 ? ($r->score / $r->total_questions) * 100 : 0;
