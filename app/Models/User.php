@@ -22,7 +22,6 @@ class User extends Authenticatable
         'group_id',
         'first_name',
         'last_name',
-        'age',
         'massar_code',
         'username',
         'password',

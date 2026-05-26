@@ -22,7 +22,6 @@ class StudentController extends Controller
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'massar_code' => 'required|string|unique:users,massar_code',
-            'age' => 'required|integer',
             'group_id' => 'required|exists:groups,id',
         ]);
 
@@ -30,7 +29,6 @@ class StudentController extends Controller
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'massar_code' => $request->massar_code,
-            'age' => $request->age,
             'group_id' => $request->group_id,
             'role' => 'student',
             'username' => $request->massar_code, // Default username
@@ -47,7 +45,6 @@ class StudentController extends Controller
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'massar_code' => 'required|string|unique:users,massar_code,'.$id,
-            'age' => 'required|integer',
             'group_id' => 'required|exists:groups,id',
         ]);
 
@@ -57,7 +54,6 @@ class StudentController extends Controller
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'massar_code' => $request->massar_code,
-            'age' => $request->age,
             'group_id' => $request->group_id,
             'username' => $request->massar_code, // Sync username if massar_code changes
         ]);

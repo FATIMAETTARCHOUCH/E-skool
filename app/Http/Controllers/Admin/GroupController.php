@@ -76,14 +76,13 @@ class GroupController extends Controller
                     continue;
                 }
                 
-                // Excel format: first_name, last_name, age, massar_code
+                // Excel format: first_name, last_name, massar_code
                 if (count($row) >= 4 && !empty($row[3])) {
                     \App\Models\User::updateOrCreate(
                         ['massar_code' => trim($row[3])],
                         [
                             'first_name' => trim($row[0]),
                             'last_name'  => trim($row[1]),
-                            'age'        => (int)$row[2],
                             'group_id'   => $group->id,
                             'role'       => 'student',
                             'username'   => trim($row[3]), // Default to massar_code

@@ -15,8 +15,6 @@
                 <h2 class="text-3xl font-black text-slate-800">{{ $student->first_name }} {{ $student->last_name }}</h2>
                 <div class="flex items-center gap-3 mt-2">
                     <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">{{ $student->massar_code }}</span>
-                    <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
-                    <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">{{ $student->age }} ans</span>
                     @if($student->group)
                     <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                     <span class="px-2 py-0.5 rounded text-[10px] font-black bg-indigo-50 text-indigo-600 uppercase tracking-widest border border-indigo-100">{{ $student->group->name }}</span>

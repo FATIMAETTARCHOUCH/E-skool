@@ -54,19 +54,13 @@
                     <x-input-label value="Massar Code" />
                     <x-text-input name="massar_code" required placeholder="G123456789" />
                 </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <x-input-label value="Age" />
-                        <x-text-input name="age" type="number" required placeholder="15" />
-                    </div>
-                    <div>
-                        <x-input-label value="Target Group" />
-                        <select name="group_id" required class="block w-full mt-1 bg-gray-50 border border-gray-200 focus:border-indigo-600 focus:ring-0 rounded-lg py-2.5 px-3 text-gray-700 text-sm">
+                <div>
+                    <x-input-label value="Target Group" />
+                    <select name="group_id" required class="block w-full mt-1 bg-gray-50 border border-gray-200 focus:border-indigo-600 focus:ring-0 rounded-lg py-2.5 px-3 text-gray-700 text-sm">
                             @foreach($groups as $group)
                                 <option value="{{ $group->id }}">{{ $group->name }}</option>
                             @endforeach
                         </select>
-                    </div>
                 </div>
                 <div class="flex gap-3 pt-2">
                     <button type="button" onclick="document.getElementById('add-student-modal').classList.add('hidden')" class="flex-1 py-2.5 rounded-lg bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 text-sm">Cancel</button>
@@ -104,19 +98,13 @@
                     <x-input-label value="Massar Code" />
                     <x-text-input name="massar_code" id="edit_massar_code" required />
                 </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <x-input-label value="Age" />
-                        <x-text-input name="age" id="edit_age" type="number" required />
-                    </div>
-                    <div>
-                        <x-input-label value="Current Group" />
-                        <select name="group_id" id="edit_group_id" required class="block w-full mt-1 bg-gray-50 border border-gray-200 focus:border-indigo-600 focus:ring-0 rounded-lg py-2.5 px-3 text-gray-700 text-sm">
+                <div>
+                    <x-input-label value="Current Group" />
+                    <select name="group_id" id="edit_group_id" required class="block w-full mt-1 bg-gray-50 border border-gray-200 focus:border-indigo-600 focus:ring-0 rounded-lg py-2.5 px-3 text-gray-700 text-sm">
                             @foreach($groups as $group)
                                 <option value="{{ $group->id }}">{{ $group->name }}</option>
                             @endforeach
                         </select>
-                    </div>
                 </div>
                 <div class="flex gap-3 pt-2">
                     <button type="button" onclick="document.getElementById('edit-student-modal').classList.add('hidden')" class="flex-1 py-2.5 rounded-lg bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 text-sm">Cancel</button>
@@ -202,7 +190,6 @@
         document.getElementById('edit_first_name').value = student.first_name;
         document.getElementById('edit_last_name').value = student.last_name;
         document.getElementById('edit_massar_code').value = student.massar_code;
-        document.getElementById('edit_age').value = student.age;
         document.getElementById('edit_group_id').value = student.group_id;
         document.getElementById('edit-student-modal').classList.remove('hidden');
     }
