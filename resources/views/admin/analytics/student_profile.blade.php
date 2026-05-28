@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('header', 'Profil de l\'Étudiant')
+@section('header', 'Profil de l\'Élève')
 
 @section('content')
 <div class="space-y-8">
@@ -15,8 +15,6 @@
                 <h2 class="text-3xl font-black text-slate-800">{{ $student->first_name }} {{ $student->last_name }}</h2>
                 <div class="flex items-center gap-3 mt-2">
                     <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">{{ $student->massar_code }}</span>
-                    <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
-                    <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">{{ $student->age }} ans</span>
                     @if($student->group)
                     <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                     <span class="px-2 py-0.5 rounded text-[10px] font-black bg-indigo-50 text-indigo-600 uppercase tracking-widest border border-indigo-100">{{ $student->group->name }}</span>
@@ -54,11 +52,64 @@
 
     <script>
         function confirmReset() {
-            if (confirm('⚠️ ATTENTION : Voulez-vous vraiment réinitialiser TOUT le parcours de cet étudiant ?\n\n- Tous les scores seront supprimés.\n- Toutes les leçons redeviendront non-terminées.\n- Cette action est irréversible.')) {
+            if (confirm('⚠️ ATTENTION : Voulez-vous vraiment réinitialiser TOUT le parcours de cet élève ?\n\n- Tous les scores seront supprimés.\n- Toutes les leçons redeviendront non-terminées.\n- Cette action est irréversible.')) {
                 document.getElementById('reset-progress-form').submit();
             }
         }
     </script>
+
+    <!-- Stuck & Blocked Status Card -->
+    <div class="glass p-10 rounded-[3rem] border border-white/60 shadow-glass relative overflow-hidden mb-8">
+        <div class="flex items-center gap-4 mb-6">
+            <div class="w-14 h-14 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center shadow-inner border border-red-100">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+            <div>
+                <h3 class="text-2xl font-black text-slate-800 tracking-tight">Difficultés & Blocages</h3>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">État d'avancement critique</p>
+            </div>
+        </div>
+
+        @if($stuckProgresses->isEmpty())
+            <div class="p-6 rounded-2xl bg-emerald-50/40 border border-emerald-100 flex items-center gap-4">
+                <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <div>
+                    <p class="font-bold text-slate-800 text-sm">Aucune difficulté majeure signalée.</p>
+                    <p class="text-xs text-slate-500 mt-0.5">Cet élève n'est actuellement bloqué sur aucun quiz.</p>
+                </div>
+            </div>
+        @else
+            <div class="space-y-4">
+                @foreach($stuckProgresses as $progress)
+                <div class="p-5 rounded-2xl bg-red-50/20 border border-red-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-full bg-red-100 text-red-700 flex items-center justify-center shrink-0 mt-0.5">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        </div>
+                        <div>
+                            <div class="font-bold text-slate-800 text-sm">Quiz : {{ $progress->chapter->quiz->title ?? 'Quiz du Chapitre' }}</div>
+                            <div class="text-xs text-slate-500 mt-1">Cours: <span class="font-bold">{{ $progress->chapter->course->title }}</span> | Partie {{ $progress->chapter->order }} : {{ $progress->chapter->title }}</div>
+                            <div class="text-[10px] text-red-700 font-bold uppercase tracking-wider mt-2 flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Bloqué ({{ $progress->quizBlockedRemainingHours() }}h restants)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="shrink-0 flex items-center">
+                        <form action="{{ route('admin.progress.unlock', $progress) }}" method="POST" onsubmit="return confirm('Voulez-vous vraiment débloquer cet élève ?');">
+                            @csrf
+                            <button type="submit" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold uppercase transition shadow-sm">
+                                Débloquer le quiz
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        @endif
+    </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         
@@ -76,19 +127,50 @@
                 </div>
             </div>
 
-            <div class="flex items-center justify-between p-6 rounded-2xl bg-white/40 border border-slate-100/50 mb-4">
+            <div class="flex items-center justify-between p-6 rounded-2xl bg-white/40 border border-slate-100/50 mb-6">
                 <span class="font-black text-slate-600 uppercase tracking-widest text-xs">Cours Assignés</span>
                 <span class="text-xl font-black text-slate-900">{{ count($assignedCourses) }}</span>
             </div>
             
             <div class="space-y-4">
                 @foreach($assignedCourses as $course)
-                <div class="p-5 rounded-2xl flex items-center justify-between bg-white/30 border border-slate-100">
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-slate-100 text-slate-400">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                @php
+                    $courseChapters = $course->chapters;
+                    $courseProgresses = $progresses->whereIn('chapter_id', $courseChapters->pluck('id'));
+                    
+                    // Check if any progress is stuck/blocked
+                    $isCourseStuck = $courseProgresses->contains(function($p) {
+                        return $p->status === 'stuck' || ($p->quiz_blocked_until && $p->quiz_blocked_until->isFuture());
+                    });
+                    
+                    // Count completed chapters
+                    $completedCount = $courseProgresses->filter(fn($p) => in_array($p->status, ['passed', 'passed_with_help']))->count();
+                    $totalChapters = $courseChapters->count();
+                    $percent = $totalChapters > 0 ? round(($completedCount / $totalChapters) * 100) : 0;
+                @endphp
+                <div class="p-5 rounded-2xl bg-white/30 border border-slate-100">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-slate-100 text-slate-400">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            </div>
+                            <div>
+                                <span class="font-bold text-slate-700 block">{{ $course->title }}</span>
+                                <span class="text-[10px] text-gray-500 font-medium uppercase">{{ $completedCount }}/{{ $totalChapters }} chapitres validés</span>
+                            </div>
                         </div>
-                        <span class="font-bold text-slate-700">{{ $course->title }}</span>
+                        <div>
+                            @if($isCourseStuck)
+                                <span class="bg-red-100 text-red-700 border border-red-200 text-[9px] font-black uppercase px-2 py-1 rounded-md animate-pulse">Besoin d'aide</span>
+                            @elseif($percent === 100 && $totalChapters > 0)
+                                <span class="bg-emerald-100 text-emerald-700 border border-emerald-200 text-[9px] font-black uppercase px-2 py-1 rounded-md">Terminé</span>
+                            @else
+                                <span class="bg-indigo-100 text-indigo-700 border border-indigo-200 text-[9px] font-black uppercase px-2 py-1 rounded-md">En cours</span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div class="h-full {{ $isCourseStuck ? 'bg-red-500' : ($percent === 100 ? 'bg-emerald-500' : 'bg-indigo-600') }} rounded-full" style="width: {{ $percent }}%"></div>
                     </div>
                 </div>
                 @endforeach
@@ -105,7 +187,7 @@
                 </div>
                 <div>
                     <h3 class="text-2xl font-black text-slate-800 tracking-tight">Performances Quizz</h3>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Évaluation Continue</p>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Évaluation Continue (Tentatives)</p>
                 </div>
             </div>
 
@@ -122,14 +204,22 @@
 
             <div class="space-y-4">
                 @foreach($student->results as $result)
-                <div class="p-5 rounded-2xl flex items-center justify-between border {{ $result->is_passed ? 'bg-emerald-50/50 border-emerald-100' : 'bg-red-50/50 border-red-100' }} group/row">
+                <div class="p-5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between border {{ $result->is_passed ? 'bg-emerald-50/50 border-emerald-100' : 'bg-red-50/50 border-red-100' }} gap-4 group/row">
                     <div>
-                        <p class="font-bold text-slate-700 text-sm">{{ $result->quiz->title ?? 'Quiz Supprimé' }}</p>
-                        <p class="text-[10px] text-slate-400 uppercase font-bold mt-1">{{ $result->created_at->format('M d, Y') }}</p>
+                        <div class="flex items-center gap-2">
+                            <span class="px-2 py-0.5 rounded text-[8px] font-black {{ $result->is_passed ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800' }} uppercase tracking-wider">
+                                Tentative #{{ $result->attempt_number }}
+                            </span>
+                            <span class="text-[10px] text-gray-500 font-bold uppercase">{{ $result->created_at->format('d/m/Y H:i') }}</span>
+                        </div>
+                        <p class="font-bold text-slate-700 text-sm mt-1.5">{{ $result->quiz->title ?? 'Quiz Supprimé' }}</p>
+                        @if($result->quiz?->chapter?->course)
+                            <p class="text-[9px] text-indigo-650 font-bold uppercase mt-0.5">{{ $result->quiz->chapter->course->title }} > Partie {{ $result->quiz->chapter->order }}</p>
+                        @endif
                     </div>
-                    <div class="flex items-center gap-4">
-                        <span class="text-lg font-black {{ $result->is_passed ? 'text-emerald-600' : 'text-red-500' }}">
-                            {{ $result->total_questions > 0 ? round(($result->score / $result->total_questions) * 100) : 0 }}%
+                    <div class="flex items-center justify-between sm:justify-end gap-4 shrink-0">
+                        <span class="text-xl font-black {{ $result->is_passed ? 'text-emerald-600' : 'text-red-500' }}">
+                            {{ $result->score }}%
                         </span>
                         
                         <!-- Delete Single Result -->

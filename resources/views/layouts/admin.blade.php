@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard — {{ config('app.name') }}</title>
+    
+    <!-- Dark Mode Initializer -->
+    <script>
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    </script>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         .mesh-bg {
@@ -42,7 +52,7 @@
                         ['url' => '/admin/users', 'label' => 'Utilisateurs', 'icon' => 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z'],
                         ['url' => '/admin/groups', 'label' => 'Groupes', 'icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z'],
                         ['url' => '/admin/analytics/students', 'label' => 'Analytique', 'icon' => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'],
-                        ['url' => '/admin/students', 'label' => 'Étudiants', 'icon' => 'M12 14l9-5-9-5-9 5 9 5z'],
+                        ['url' => '/admin/students', 'label' => 'Élèves', 'icon' => 'M12 14l9-5-9-5-9 5 9 5z'],
                         ['url' => '/admin/courses', 'label' => 'Cours', 'icon' => 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'],
                         ['url' => '/admin/quizzes', 'label' => 'Évaluations', 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4'],
                         ['url' => '/messages', 'label' => 'Messages', 'icon' => 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z'],
@@ -58,10 +68,35 @@
                 </a>
                 @endforeach
             </nav>
-            <div class="p-6 border-t border-gray-200">
+            <div class="p-6 border-t border-gray-200 dark:border-slate-800 flex flex-col gap-4">
+                <!-- Dark Mode Toggle -->
+                <div x-data="{ 
+                    darkMode: localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
+                    toggleTheme() {
+                        this.darkMode = !this.darkMode;
+                        if (this.darkMode) {
+                            document.documentElement.classList.add('dark');
+                            localStorage.theme = 'dark';
+                        } else {
+                            document.documentElement.classList.remove('dark');
+                            localStorage.theme = 'light';
+                        }
+                    }
+                }" class="flex items-center justify-between">
+                    <span class="font-black text-[10px] uppercase tracking-widest text-gray-600 dark:text-slate-400">Mode Sombre</span>
+                    <button @click="toggleTheme()" class="p-2 text-slate-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-slate-900 transition-all">
+                        <span x-show="!darkMode">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                        </span>
+                        <span x-show="darkMode" style="display: none;">
+                            <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z"></path></svg>
+                        </span>
+                    </button>
+                </div>
+
                 <form method="POST" action="/logout">
                     @csrf
-                    <button type="submit" class="w-full flex items-center justify-center gap-2 py-3 rounded-lg text-red-600 font-black text-[10px] uppercase tracking-widest hover:bg-red-50 transition-colors">
+                    <button type="submit" class="w-full flex items-center justify-center gap-2 py-3 rounded-lg text-red-600 font-black text-[10px] uppercase tracking-widest hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                         Déconnexion
                     </button>

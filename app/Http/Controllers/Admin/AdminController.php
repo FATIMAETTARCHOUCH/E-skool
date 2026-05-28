@@ -41,7 +41,46 @@ class AdminController extends Controller
             ->take(6)
             ->get();
 
-        return view('admin.dashboard', compact('maintenance', 'stats', 'groupPerformance', 'recentResults'));
+        // Blocked Students by Group
+        $blockedProgress = \App\Models\StudentProgress::where('status', \App\Enums\StudentProgressStatus::STUCK->value)
+            ->orWhere(function($query) {
+                $query->whereNotNull('quiz_blocked_until')
+                      ->where('quiz_blocked_until', '>', now());
+            })
+            ->with(['user.group', 'chapter.quiz'])
+            ->get();
+
+        $blockedGroups = $blockedProgress->groupBy(function($p) {
+            return $p->user && $p->user->group ? $p->user->group->id : 0;
+        })->map(function($progresses, $groupId) {
+            $groupName = $groupId == 0 ? 'Sans Groupe' : $progresses->first()->user->group->name;
+            return [
+                'id' => $groupId,
+                'name' => $groupName,
+                'count' => $progresses->count(),
+                'progresses' => $progresses
+            ];
+        })->values();
+
+        // Top Students (Passed on first attempt)
+        $topStudents = \App\Models\Result::where('attempt_number', 1)
+            ->where('is_passed', true)
+            ->with(['user.group', 'quiz.chapter.course'])
+            ->orderBy('score', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->take(6)
+            ->get();
+
+        // Second Attempt Successes
+        $secondAttemptStudents = \App\Models\Result::where('attempt_number', 2)
+            ->where('is_passed', true)
+            ->with(['user.group', 'quiz.chapter.course'])
+            ->orderBy('score', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->take(6)
+            ->get();
+
+        return view('admin.dashboard', compact('maintenance', 'stats', 'groupPerformance', 'recentResults', 'blockedGroups', 'topStudents', 'secondAttemptStudents'));
     }
 
     public function toggleMaintenance()

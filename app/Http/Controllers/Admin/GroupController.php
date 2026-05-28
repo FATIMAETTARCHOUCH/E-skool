@@ -76,18 +76,24 @@ class GroupController extends Controller
                     continue;
                 }
                 
-                // Excel format: first_name, last_name, age, massar_code
+                // Excel format support: [first_name, last_name, massar_code] OR [first_name, last_name, age, massar_code]
+                $massarCode = '';
                 if (count($row) >= 4 && !empty($row[3])) {
+                    $massarCode = trim($row[3]);
+                } elseif (count($row) >= 3 && !empty($row[2])) {
+                    $massarCode = trim($row[2]);
+                }
+                
+                if (!empty($massarCode)) {
                     \App\Models\User::updateOrCreate(
-                        ['massar_code' => trim($row[3])],
+                        ['massar_code' => $massarCode],
                         [
                             'first_name' => trim($row[0]),
                             'last_name'  => trim($row[1]),
-                            'age'        => (int)$row[2],
                             'group_id'   => $group->id,
                             'role'       => 'student',
-                            'username'   => trim($row[3]), // Default to massar_code
-                            'password'   => \Illuminate\Support\Facades\Hash::make(trim($row[3])), // Default to massar_code
+                            'username'   => $massarCode,
+                            'password'   => \Illuminate\Support\Facades\Hash::make($massarCode),
                             'is_first_login' => true,
                         ]
                     );

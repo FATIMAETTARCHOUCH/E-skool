@@ -53,6 +53,13 @@
                                 <a href="{{ route('admin.courses.edit', $course) }}" class="px-3 py-1.5 rounded-md bg-indigo-50 text-indigo-600 hover:bg-indigo-100 text-xs font-bold uppercase border border-indigo-200 transition">
                                     Modifier
                                 </a>
+                                <form action="{{ route('admin.courses.destroy', $course) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce cours ?');" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="px-3 py-1.5 rounded-md bg-red-50 text-red-600 hover:bg-red-100 text-xs font-bold uppercase border border-red-200 transition">
+                                        Supprimer
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>

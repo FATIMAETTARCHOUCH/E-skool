@@ -43,7 +43,7 @@ class AnalyticsController extends Controller
 
     public function studentProfile($id)
     {
-        $student = User::with(['group.courses.chapters', 'results.quiz.chapter'])->findOrFail($id);
+        $student = User::with(['group.courses.chapters', 'results.quiz.chapter.course'])->findOrFail($id);
         
         $assignedCourses = $student->group ? $student->group->courses : collect([]);
         $assignedChapters = collect([]);
@@ -51,7 +51,7 @@ class AnalyticsController extends Controller
             $assignedChapters = $assignedChapters->merge($course->chapters);
         }
 
-        $progresses = StudentProgress::where('user_id', $student->id)->get()->keyBy('chapter_id');
+        $progresses = StudentProgress::where('user_id', $student->id)->with('chapter.quiz')->get()->keyBy('chapter_id');
         $completedChapterIds = $progresses
             ->filter(fn ($p) => in_array($p->status, \App\Models\StudentProgress::completedStatuses(), true))
             ->keys()
@@ -64,7 +64,12 @@ class AnalyticsController extends Controller
         $allPossibleQuizzes = Quiz::whereIn('chapter_id', $assignedChapters->pluck('id'))->get();
         $quizzesNotTaken = $allPossibleQuizzes->filter(fn($q) => !in_array($q->id, $quizzesTakenIds));
 
-        return view('admin.analytics.student_profile', compact('student', 'assignedCourses', 'chaptersNotRead', 'quizzesNotTaken', 'progresses'));
+        $stuckProgresses = $progresses->filter(function($p) {
+            return $p->status === \App\Enums\StudentProgressStatus::STUCK->value
+                || ($p->quiz_blocked_until && $p->quiz_blocked_until->isFuture());
+        });
+
+        return view('admin.analytics.student_profile', compact('student', 'assignedCourses', 'chaptersNotRead', 'quizzesNotTaken', 'progresses', 'stuckProgresses'));
     }
 
     public function resetQuizzes($id)

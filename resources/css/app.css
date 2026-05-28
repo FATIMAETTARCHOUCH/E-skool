@@ -1,3 +1,196 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Smooth global transition for theme switching */
+html, body, div, sidebar, aside, main, nav, header, footer, table, tr, td, th, a, button, input, select, textarea, span, p, h1, h2, h3, h4, h5, h6 {
+    transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+                border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+                color 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+                fill 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+                stroke 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+                box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom Scrollbar for Dark Mode */
+.dark ::-webkit-scrollbar-track {
+    background: #0b0f19;
+}
+.dark ::-webkit-scrollbar-thumb {
+    background: #1e293b;
+    border: 3px solid #0b0f19;
+    border-radius: 9999px;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+    background: #334155;
+}
+
+/* Dark Mode Global Styles */
+.dark body {
+    color: #f1f5f9;
+}
+
+.dark .mesh-bg {
+    background-color: #030712 !important; /* Slate 950 */
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.06) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.06) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, rgba(59, 130, 246, 0.08) 0px, transparent 50%) !important;
+}
+
+.dark .glass {
+    background: rgba(15, 23, 42, 0.65) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark .glass-card {
+    background: rgba(15, 23, 42, 0.7) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark .bg-white {
+    background-color: #0f172a !important; /* Slate 900 */
+    color: #f8fafc !important;
+}
+
+.dark .bg-gray-50, .dark .bg-slate-50 {
+    background-color: #1e293b !important; /* Slate 800 */
+}
+
+.dark .bg-gray-100 {
+    background-color: #334155 !important; /* Slate 700 */
+}
+
+.dark .hover\:bg-gray-50:hover, 
+.dark .hover\:bg-gray-100:hover, 
+.dark .group:hover .group-hover\:bg-gray-50,
+.dark .hover\:bg-slate-50:hover {
+    background-color: #1e293b !important;
+}
+
+.dark .bg-indigo-50 {
+    background-color: rgba(99, 102, 241, 0.15) !important;
+}
+
+.dark .bg-emerald-50 {
+    background-color: rgba(16, 185, 129, 0.15) !important;
+}
+
+.dark .bg-red-50 {
+    background-color: rgba(239, 68, 68, 0.15) !important;
+}
+
+.dark .bg-amber-50 {
+    background-color: rgba(245, 158, 11, 0.15) !important;
+}
+
+.dark .bg-brand-600 {
+    background-color: #4f46e5 !important; /* Indigo 600 */
+}
+
+/* Text Colors */
+.dark .text-gray-900, .dark .text-slate-900 {
+    color: #f8fafc !important; /* Slate 50 */
+}
+
+.dark .text-gray-800, .dark .text-slate-800 {
+    color: #f1f5f9 !important; /* Slate 100 */
+}
+
+.dark .text-gray-700, .dark .text-slate-700 {
+    color: #cbd5e1 !important; /* Slate 300 */
+}
+
+.dark .text-gray-600, .dark .text-slate-600 {
+    color: #94a3b8 !important; /* Slate 400 */
+}
+
+.dark .text-gray-500, .dark .text-slate-500 {
+    color: #64748b !important; /* Slate 500 */
+}
+
+.dark .text-gray-400, .dark .text-slate-400 {
+    color: #475569 !important; /* Slate 600 */
+}
+
+.dark .text-indigo-600, .dark .text-brand-600 {
+    color: #818cf8 !important; /* Indigo 400 */
+}
+
+.dark .text-emerald-600 {
+    color: #34d399 !important; /* Emerald 400 */
+}
+
+.dark .text-red-600 {
+    color: #f87171 !important; /* Red 400 */
+}
+
+.dark .text-amber-600 {
+    color: #fbbf24 !important; /* Amber 400 */
+}
+
+/* Borders */
+.dark .border-gray-200, 
+.dark .border-slate-200, 
+.dark .border-gray-100, 
+.dark .border-slate-100 {
+    border-color: #1e293b !important; /* Slate 800 */
+}
+
+.dark .border-indigo-200 {
+    border-color: rgba(129, 140, 248, 0.25) !important;
+}
+
+.dark .border-red-200 {
+    border-color: rgba(248, 113, 113, 0.25) !important;
+}
+
+.dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]),
+.dark .divide-y > :not([hidden]) ~ :not([hidden]) {
+    border-color: #1e293b !important;
+}
+
+/* Inputs & Form Elements */
+.dark input[type="text"], 
+.dark input[type="email"], 
+.dark input[type="password"], 
+.dark input[type="number"], 
+.dark select, 
+.dark textarea {
+    background-color: #1e293b !important; /* Slate 800 */
+    border-color: #334155 !important; /* Slate 700 */
+    color: #f8fafc !important;
+}
+
+.dark input::placeholder, 
+.dark textarea::placeholder {
+    color: #64748b !important; /* Slate 500 */
+}
+
+.dark input:focus, 
+.dark select:focus, 
+.dark textarea:focus {
+    border-color: #6366f1 !important; /* Indigo 500 */
+    outline: none !important;
+}
+
+/* Modals Overlay */
+.dark .bg-gray-500.opacity-75 {
+    background-color: #020617 !important;
+    opacity: 0.8 !important;
+}
+
+/* Welcome Page Hero Gradient Text */
+.dark .brand-gradient-text {
+    background: linear-gradient(135deg, #a5b4fc 0%, #c084fc 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+}

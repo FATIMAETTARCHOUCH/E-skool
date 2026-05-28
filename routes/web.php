@@ -84,6 +84,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('chapters/{chapter}/reorder-pdfs', [ChapterController::class, 'reorderPdfs'])->name('chapters.reorder_pdfs');
     Route::get('progress/{group}', [\App\Http\Controllers\Admin\StudentProgressController::class, 'index'])->name('progress.index');
     Route::get('progress/student/{student}', [\App\Http\Controllers\Admin\StudentProgressController::class, 'show'])->name('progress.show');
+    Route::post('progress/{progress}/unlock', [\App\Http\Controllers\Admin\StudentProgressController::class, 'unlock'])->name('progress.unlock');
     Route::resource('quizzes', QuizController::class);
     Route::get('quizzes/{quiz}/questions', [QuestionController::class, 'index'])->name('quizzes.questions.index');
     Route::post('quizzes/{quiz}/questions', [QuestionController::class, 'store'])->name('quizzes.questions.store');

@@ -20,7 +20,7 @@
             <div>
                 <x-input-label value="System Role" />
                 <select name="role" required class="block w-full mt-1 bg-gray-50 border border-gray-200 focus:border-indigo-400 focus:outline-none focus:bg-white rounded-lg py-2.5 px-4 text-gray-700 text-sm transition">
-                    <option value="student">Étudiant</option>
+                    <option value="student">Élève</option>
                     <option value="admin">Administrator</option>
                 </select>
             </div>

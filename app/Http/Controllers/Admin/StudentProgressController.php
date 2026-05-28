@@ -58,4 +58,15 @@ class StudentProgressController extends Controller
             'attemptsByChapter' => $attemptsByChapter,
         ]);
     }
+
+    public function unlock(StudentProgress $progress)
+    {
+        $progress->update([
+            'quiz_blocked_until' => null,
+            'status' => \App\Enums\StudentProgressStatus::IN_REMEDIATION->value,
+            'needs_remediation' => true,
+        ]);
+
+        return redirect()->back()->with('success', "Le quiz a été débloqué avec succès pour l'étudiant.");
+    }
 }
