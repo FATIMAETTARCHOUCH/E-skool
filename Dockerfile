@@ -25,8 +25,9 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
-# Copy composer from official image
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Copy composer from official image to /usr/local/bin
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+RUN chmod +x /usr/local/bin/composer
 
 # Set working directory
 WORKDIR /var/www/html
@@ -34,8 +35,8 @@ WORKDIR /var/www/html
 # Copy application source code
 COPY . .
 
-# Install PHP dependencies
-RUN composer install --no-interaction --optimize-autoloader --no-dev
+# Install PHP dependencies using composer
+RUN php /usr/local/bin/composer install --no-interaction --optimize-autoloader --no-dev
 
 # Install NPM dependencies and compile frontend assets using Vite
 RUN npm ci || npm install
