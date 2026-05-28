@@ -22,7 +22,6 @@ class User extends Authenticatable
         'group_id',
         'first_name',
         'last_name',
-        'age',
         'massar_code',
         'username',
         'password',
@@ -57,6 +56,11 @@ class User extends Authenticatable
             'is_first_login' => 'boolean',
             'last_login_at' => 'datetime',
         ];
+    }
+
+    public function progresses()
+    {
+        return $this->hasMany(StudentProgress::class, 'user_id');
     }
 
     public function group()

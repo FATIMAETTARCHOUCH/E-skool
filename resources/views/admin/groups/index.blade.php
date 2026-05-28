@@ -84,7 +84,7 @@
                                 @csrf
                                 <div class="p-4 rounded-lg bg-gray-50 border border-gray-200 text-center">
                                     <input type="file" name="xlsx_file" accept=".xlsx" required class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition">
-                                    <p class="text-xs text-gray-500 mt-3 font-semibold">XLSX: first_name, last_name, age, massar_code</p>
+                                    <p class="text-xs text-gray-500 mt-3 font-semibold">XLSX: first_name, last_name, massar_code</p>
                                 </div>
                                 <div class="flex gap-3 pt-2">
                                     <button type="button" onclick="document.getElementById('import-modal-{{ $group->id }}').classList.add('hidden')" class="flex-1 py-2.5 rounded-lg bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 border border-transparent text-sm transition">Cancel</button>

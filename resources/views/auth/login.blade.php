@@ -1,6 +1,6 @@
 <x-guest-layout>
     <div class="text-center mb-10">
-        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight italic">Espace <span class="text-indigo-600">Massar</span></h1>
+        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight italic">Espace <span class="text-indigo-600">AutoReméd</span></h1>
         <p class="text-xs font-bold text-slate-400 mt-2 uppercase tracking-widest">Accès Élève & Professeur</p>
     </div>
 

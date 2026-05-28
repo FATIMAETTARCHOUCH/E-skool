@@ -15,7 +15,7 @@ class AnalyticsController extends Controller
 {
     public function students(Request $request)
     {
-        $query = User::where('role', 'student')->with('group.branch.school');
+        $query = User::where('role', 'student')->with(['group.branch.school', 'results', 'progresses']);
 
         if ($request->filled('search')) {
             $search = $request->search;

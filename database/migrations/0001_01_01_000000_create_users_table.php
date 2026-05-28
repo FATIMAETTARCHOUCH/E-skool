@@ -18,7 +18,6 @@ return new class extends Migration
             // foreign key constraint will be added in a later migration since groups table doesn't exist yet
             $table->string('first_name')->nullable();
             $table->string('last_name')->nullable();
-            $table->integer('age')->nullable();
             $table->string('massar_code')->unique()->nullable();
             $table->string('username')->unique();
             $table->boolean('is_first_login')->default(true);

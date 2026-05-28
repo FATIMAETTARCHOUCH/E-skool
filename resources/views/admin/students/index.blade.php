@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('header', 'Student Management')
+@section('header', 'Gestion des Élèves')
 
 @section('content')
 <div class="min-h-screen bg-gray-50">
@@ -9,7 +9,7 @@
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div class="p-6 rounded-lg bg-white border border-gray-200 flex items-center justify-between">
             <div>
-                <p class="text-xs font-medium text-gray-600 uppercase tracking-widest">Total Students</p>
+                <p class="text-xs font-medium text-gray-600 uppercase tracking-widest">Total des Élèves</p>
                 <h3 class="text-2xl font-bold text-gray-900 mt-1">{{ $students->count() }}</h3>
             </div>
             <div class="w-12 h-12 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600 border border-indigo-200">
@@ -19,12 +19,12 @@
         <!-- Search Filter -->
         <div class="md:col-span-2 p-3 rounded-lg bg-white border border-gray-200 flex items-center px-4">
             <svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            <input type="text" placeholder="Search students..." class="bg-transparent border-none focus:ring-0 w-full text-gray-700 placeholder-gray-400 text-sm">
+            <input type="text" placeholder="Rechercher des élèves..." class="bg-transparent border-none focus:ring-0 w-full text-gray-700 placeholder-gray-400 text-sm">
         </div>
         <div class="flex items-center justify-end">
             <button onclick="document.getElementById('add-student-modal').classList.remove('hidden')" class="px-4 py-2.5 rounded-lg bg-indigo-600 text-white font-bold text-sm hover:bg-indigo-700 transition-all flex items-center justify-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                Add Student
+                Ajouter élève
             </button>
         </div>
     </div>
@@ -33,7 +33,7 @@
     <div id="add-student-modal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/50">
         <div class="bg-white p-6 rounded-lg max-w-lg w-full border border-gray-200 animate-in zoom-in duration-300">
             <div class="flex justify-between items-center mb-6">
-                <h4 class="text-lg font-bold text-gray-900">New Student</h4>
+                <h4 class="text-lg font-bold text-gray-900">Nouvel Élève</h4>
                 <button onclick="document.getElementById('add-student-modal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600 transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
@@ -42,20 +42,20 @@
                 @csrf
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <x-input-label value="First Name" />
-                        <x-text-input name="first_name" required placeholder="John" />
+                        <x-input-label value="Prénom" />
+                        <x-text-input name="first_name" required placeholder="Ahmed" />
                     </div>
                     <div>
-                        <x-input-label value="Last Name" />
-                        <x-text-input name="last_name" required placeholder="Doe" />
+                        <x-input-label value="Nom" />
+                        <x-text-input name="last_name" required placeholder="Alami" />
                     </div>
                 </div>
                 <div>
-                    <x-input-label value="Massar Code" />
+                    <x-input-label value="Code Massar" />
                     <x-text-input name="massar_code" required placeholder="G123456789" />
                 </div>
                 <div>
-                    <x-input-label value="Target Group" />
+                    <x-input-label value="Groupe Cible" />
                     <select name="group_id" required class="block w-full mt-1 bg-gray-50 border border-gray-200 focus:border-indigo-600 focus:ring-0 rounded-lg py-2.5 px-3 text-gray-700 text-sm">
                         @foreach($groups as $group)
                             <option value="{{ $group->id }}">{{ $group->name }}</option>
@@ -63,9 +63,9 @@
                     </select>
                 </div>
                 <div class="flex gap-3 pt-2">
-                    <button type="button" onclick="document.getElementById('add-student-modal').classList.add('hidden')" class="flex-1 py-2.5 rounded-lg bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 text-sm">Cancel</button>
+                    <button type="button" onclick="document.getElementById('add-student-modal').classList.add('hidden')" class="flex-1 py-2.5 rounded-lg bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 text-sm">Annuler</button>
                     <x-primary-button class="flex-1 justify-center py-2.5 text-sm">
-                        SAVE STUDENT
+                        Enregistrer l'élève
                     </x-primary-button>
                 </div>
             </form>
@@ -76,7 +76,7 @@
     <div id="edit-student-modal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/50">
         <div class="bg-white p-6 rounded-lg max-w-lg w-full border border-gray-200 animate-in zoom-in duration-300">
             <div class="flex justify-between items-center mb-6">
-                <h4 class="text-lg font-bold text-gray-900">Update Records</h4>
+                <h4 class="text-lg font-bold text-gray-900">Modifier l'Élève</h4>
                 <button onclick="document.getElementById('edit-student-modal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600 transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
@@ -86,20 +86,20 @@
                 @method('PUT')
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <x-input-label value="First Name" />
+                        <x-input-label value="Prénom" />
                         <x-text-input name="first_name" id="edit_first_name" required />
                     </div>
                     <div>
-                        <x-input-label value="Last Name" />
+                        <x-input-label value="Nom" />
                         <x-text-input name="last_name" id="edit_last_name" required />
                     </div>
                 </div>
                 <div>
-                    <x-input-label value="Massar Code" />
+                    <x-input-label value="Code Massar" />
                     <x-text-input name="massar_code" id="edit_massar_code" required />
                 </div>
                 <div>
-                    <x-input-label value="Current Group" />
+                    <x-input-label value="Groupe Actuel" />
                     <select name="group_id" id="edit_group_id" required class="block w-full mt-1 bg-gray-50 border border-gray-200 focus:border-indigo-600 focus:ring-0 rounded-lg py-2.5 px-3 text-gray-700 text-sm">
                         @foreach($groups as $group)
                             <option value="{{ $group->id }}">{{ $group->name }}</option>
@@ -107,9 +107,9 @@
                     </select>
                 </div>
                 <div class="flex gap-3 pt-2">
-                    <button type="button" onclick="document.getElementById('edit-student-modal').classList.add('hidden')" class="flex-1 py-2.5 rounded-lg bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 text-sm">Cancel</button>
+                    <button type="button" onclick="document.getElementById('edit-student-modal').classList.add('hidden')" class="flex-1 py-2.5 rounded-lg bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 text-sm">Annuler</button>
                     <x-primary-button class="flex-1 justify-center py-2.5 text-sm">
-                        SYNC DATA
+                        Enregistrer les modifications
                     </x-primary-button>
                 </div>
             </form>
@@ -122,10 +122,10 @@
             <table class="w-full text-left">
                 <thead>
                     <tr class="text-gray-500 text-xs uppercase tracking-wide font-medium border-b border-gray-100 bg-gray-50">
-                        <th class="px-6 py-3">Identity</th>
-                        <th class="px-6 py-3">Institutional Code</th>
-                        <th class="px-6 py-3">Placement</th>
-                        <th class="px-6 py-3">Status</th>
+                        <th class="px-6 py-3">Identité</th>
+                        <th class="px-6 py-3">Code Massar</th>
+                        <th class="px-6 py-3">Groupe</th>
+                        <th class="px-6 py-3">Statut</th>
                         <th class="px-6 py-3 text-right">Actions</th>
                     </tr>
                 </thead>
@@ -134,7 +134,7 @@
                     <tr class="hover:bg-gray-50 transition-colors">
                         <td class="px-6 py-4">
                             <div class="font-bold text-gray-900">{{ $student->first_name }} {{ $student->last_name }}</div>
-                            <div class="text-xs text-gray-500 mt-0.5">Student ID #{{ $student->id }}</div>
+                            <div class="text-xs text-gray-500 mt-0.5">ID Élève #{{ $student->id }}</div>
                         </td>
                         <td class="px-6 py-4">
                             <span class="px-3 py-1 rounded-md bg-gray-100 font-mono font-medium text-xs text-gray-600 border border-gray-200">
@@ -142,17 +142,17 @@
                             </span>
                         </td>
                         <td class="px-6 py-4">
-                            <div class="text-sm font-bold text-gray-700">{{ $student->group ? $student->group->name : 'Unassigned' }}</div>
+                            <div class="text-sm font-bold text-gray-700">{{ $student->group ? $student->group->name : 'Non assigné' }}</div>
                             <div class="text-xs text-gray-500 mt-0.5">{{ $student->group ? $student->group->branch->school->name : '—' }}</div>
                         </td>
                         <td class="px-6 py-4">
                             @if($student->is_first_login)
                                 <span class="px-3 py-1 rounded-md text-xs font-medium uppercase border bg-orange-50 text-orange-700 border-orange-200">
-                                    Awaiting Login
+                                    Jamais connecté
                                 </span>
                             @else
                                 <span class="px-3 py-1 rounded-md text-xs font-medium uppercase border bg-green-50 text-green-700 border-green-200">
-                                    Verified
+                                    Connecté
                                 </span>
                             @endif
                         </td>
@@ -162,7 +162,7 @@
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                 </button>
  
-                                <form action="{{ route('admin.students.destroy', $student->id) }}" method="POST" onsubmit="return confirm('Archive student record?')" class="inline">
+                                <form action="{{ route('admin.students.destroy', $student->id) }}" method="POST" onsubmit="return confirm('Voulez-vous vraiment archiver cet élève ?')" class="inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="w-9 h-9 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 flex items-center justify-center border border-red-200 transition">
@@ -174,7 +174,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="px-6 py-12 text-center text-gray-400 italic">No students found</td>
+                        <td colspan="5" class="px-6 py-12 text-center text-gray-400 italic">Aucun élève trouvé</td>
                     </tr>
                     @endforelse
                 </tbody>
