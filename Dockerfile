@@ -22,8 +22,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo_mysql bcmath zip gd
 
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
+# Enable Apache mod_rewrite and disable conflicting MPMs (ensure only prefork is active)
+RUN a2enmod rewrite && (a2dismod mpm_event mpm_worker || true) && a2enmod mpm_prefork
 
 # Copy composer from official image to /usr/local/bin
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer

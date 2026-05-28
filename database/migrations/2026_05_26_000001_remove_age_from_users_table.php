@@ -8,15 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('age');
-        });
+        if (Schema::hasColumn('users', 'age')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->dropColumn('age');
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->integer('age')->nullable();
-        });
+        if (!Schema::hasColumn('users', 'age')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->integer('age')->nullable();
+            });
+        }
     }
 };
