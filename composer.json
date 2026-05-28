@@ -37,18 +37,18 @@
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "C:\\xampp\\php\\php.exe artisan package:discover --ansi"
+            "@php artisan package:discover --ansi"
         ],
         "post-update-cmd": [
-            "C:\\xampp\\php\\php.exe artisan vendor:publish --tag=laravel-assets --ansi --force"
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
         ],
         "post-root-package-install": [
-            "C:\\xampp\\php\\php.exe -r \"file_exists('.env') || copy('.env.example', '.env');\""
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
         "post-create-project-cmd": [
-            "C:\\xampp\\php\\php.exe artisan key:generate --ansi",
-            "C:\\xampp\\php\\php.exe -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
-            "C:\\xampp\\php\\php.exe artisan migrate --graceful --ansi"
+            "@php artisan key:generate --ansi",
+            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+            "@php artisan migrate --graceful --ansi"
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
