@@ -112,12 +112,7 @@
                                     Accéder à mon espace
                                 </a>
                             @endauth
-                            <div class="flex items-center gap-4">
-                                <div class="p-3 bg-white rounded-2xl shadow-sm border border-slate-100">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Flag_of_Morocco.svg/1200px-Flag_of_Morocco.svg.png" class="w-8 h-auto rounded-sm" alt="Maroc">
-                                </div>
-                                <span class="text-[10px] font-bold text-slate-400 tracking-tight uppercase leading-tight">Conforme au Programme<br>du Ministère de l'Éducation</span>
-                            </div>
+                            
                         </div>
                     </div>
                 </div>
