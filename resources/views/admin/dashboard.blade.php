@@ -221,33 +221,7 @@
         </div>
     </div>
 
-    <!-- Recent Activity Row -->
-    <div class="p-6 bg-white border border-gray-200 rounded-lg overflow-hidden">
-        <div class="flex justify-between items-center mb-10">
-            <h4 class="text-lg font-bold text-gray-900 uppercase">Activité Récente</h4>
-            <a href="/admin/students" class="text-xs font-bold text-indigo-600 hover:underline uppercase">VOIR TOUT</a>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @forelse($recentResults as $result)
-            <div class="p-4 bg-gray-50 border border-gray-200 rounded-md flex items-center gap-4 group hover:border-indigo-300 transition-all">
-                <div class="w-12 h-12 rounded-lg bg-indigo-100 flex items-center justify-center font-bold text-indigo-600">
-                    {{ substr($result->user->first_name, 0, 1) }}
-                </div>
-                <div class="flex-1 overflow-hidden">
-                    <p class="font-bold text-gray-900 truncate">{{ $result->user->first_name }} {{ $result->user->last_name }}</p>
-                    <p class="text-[10px] text-gray-500 font-medium uppercase truncate">{{ $result->quiz->title }}</p>
-                </div>
-                <div class="text-right">
-                    <div class="font-bold text-emerald-600 text-base">{{ $result->score }}/{{ $result->total_questions }}</div>
-                    <p class="text-[8px] text-gray-400 font-medium uppercase">{{ $result->created_at->diffForHumans() }}</p>
-                </div>
-            </div>
-            @empty
-            <div class="col-span-full py-10 text-center text-gray-400 text-sm italic">Aucune activité récente détectée.</div>
-            @endforelse
-        </div>
-    </div>
+    
 
     <!-- Top Students (First Attempt Success) -->
     <div class="p-6 bg-white border border-gray-200 rounded-lg overflow-hidden mt-8 relative">
@@ -337,5 +311,33 @@
         </div>
     </div>
 
+<!-- Recent Activity Row -->
+    <div class="p-6 bg-white border border-gray-200 rounded-lg overflow-hidden">
+        <div class="flex justify-between items-center mb-10">
+            <h4 class="text-lg font-bold text-gray-900 uppercase">Activité Récente</h4>
+            <a href="/admin/students" class="text-xs font-bold text-indigo-600 hover:underline uppercase">VOIR TOUT</a>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @forelse($recentResults as $result)
+            <div class="p-4 bg-gray-50 border border-gray-200 rounded-md flex items-center gap-4 group hover:border-indigo-300 transition-all">
+                <div class="w-12 h-12 rounded-lg bg-indigo-100 flex items-center justify-center font-bold text-indigo-600">
+                    {{ substr($result->user->first_name, 0, 1) }}
+                </div>
+                <div class="flex-1 overflow-hidden">
+                    <p class="font-bold text-gray-900 truncate">{{ $result->user->first_name }} {{ $result->user->last_name }}</p>
+                    <p class="text-[10px] text-gray-500 font-medium uppercase truncate">{{ $result->quiz->title }}</p>
+                </div>
+                <div class="text-right">
+                    <div class="font-bold text-emerald-600 text-base">{{ $result->score }}/{{ $result->total_questions }}</div>
+                    <p class="text-[8px] text-gray-400 font-medium uppercase">{{ $result->created_at->diffForHumans() }}</p>
+                </div>
+            </div>
+            @empty
+            <div class="col-span-full py-10 text-center text-gray-400 text-sm italic">Aucune activité récente détectée.</div>
+            @endforelse
+        </div>
+    </div>
+    
 </div>
 @endsection
