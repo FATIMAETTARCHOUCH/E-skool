@@ -95,7 +95,7 @@
                         
                         <h1 class="text-5xl sm:text-7xl lg:text-8xl font-black text-slate-900 leading-[0.95] tracking-tighter">
                             La Réussite au <br>
-                            <span class="brand-gradient-text italic">Collège & Lycée.</span>
+                            <span class="brand-gradient-text italic">Lycée.</span>
                         </h1>
                         
                         <p class="text-lg text-slate-500 max-w-xl leading-relaxed font-medium">
@@ -131,7 +131,7 @@
                                 <svg class="w-7 h-7 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                             </div>
                             <div>
-                                <h3 class="text-2xl font-black leading-tight mb-4">Soutien Massar</h3>
+                                <h3 class="text-2xl font-black leading-tight mb-4">Soutien </h3>
                                 <p class="text-slate-400 text-sm font-medium leading-relaxed">
                                     Utilisez vos identifiants fournis pour accéder à un contenu personnalisé selon votre niveau scolaire.
                                 </p>
@@ -146,7 +146,7 @@
                         <div>
                             <h3 class="text-2xl font-black text-slate-800 leading-tight mb-2">Objectif Excellence</h3>
                             <p class="text-slate-400 text-sm font-medium leading-relaxed">
-                                Préparation intensive pour les contrôles continus et les examens régionaux/nationaux.
+                                Préparation intensive pour les contrôles continus et les examens.
                             </p>
                         </div>
                     </div>
@@ -160,12 +160,10 @@
                         </div>
                         <div>
                             <h4 class="text-xl font-black text-slate-800">Votre Établissement Connecté</h4>
-                            <p class="text-slate-400 text-sm font-medium">Une plateforme dédiée à la réussite des élèves du Collège et du Lycée.</p>
+                            <p class="text-slate-400 text-sm font-medium">Une plateforme dédiée à la réussite des élèves du Lycée.</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-4 text-[10px] font-black text-slate-300 uppercase tracking-[0.3em]">
-                        <span>Collège</span>
-                        <span class="w-1 h-1 bg-slate-200 rounded-full"></span>
                         <span>Lycée</span>
                         <span class="w-1 h-1 bg-slate-200 rounded-full"></span>
                         <span>Maroc</span>
