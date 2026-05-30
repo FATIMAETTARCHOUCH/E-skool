@@ -41,10 +41,10 @@
 
         {{-- 1. Chapter Info --}}
         <section class="bg-white p-6 rounded-lg border border-gray-200 space-y-5">
-            <h3 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-3">Chapter Info</h3>
+            <h3 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-3">Informations du chapitre</h3>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Course</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Cours</label>
                 <select name="course_id" class="w-full rounded-lg border-gray-200" required>
                     @foreach($courses as $course)
                         <option value="{{ $course->id }}"
@@ -58,13 +58,13 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">chapter.title</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Titre du chapitre</label>
                     <input type="text" name="title" value="{{ old('title', $isEdit ? $chapter->title : '') }}"
-                        class="w-full rounded-lg border-gray-200" required>
+                         class="w-full rounded-lg border-gray-200" required>
                     @error('title')<p class="text-red-600 text-sm mt-1">{{ $message }}</p>@enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">chapter.order</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Ordre du chapitre</label>
                     <input type="number" name="order" min="1"
                         value="{{ old('order', $isEdit ? $chapter->order : 1) }}"
                         class="w-full rounded-lg border-gray-200" required>
@@ -73,9 +73,9 @@
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">chapter.tag</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Étiquette (Optionnel)</label>
                 <input type="text" name="tag" value="{{ old('tag', $isEdit ? $chapter->tag : '') }}"
-                    class="w-full rounded-lg border-gray-200" placeholder="Optional">
+                    class="w-full rounded-lg border-gray-200" placeholder="Optionnel">
                 @error('tag')<p class="text-red-600 text-sm mt-1">{{ $message }}</p>@enderror
             </div>
         </section>

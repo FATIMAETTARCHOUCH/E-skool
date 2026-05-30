@@ -5,23 +5,23 @@
 @section('content')
 <div class="space-y-6">
     <div class="flex justify-between items-center">
-        <h3 class="text-xl font-bold text-gray-900">chapters (Chapter Parts)</h3>
-        <a href="{{ route('admin.chapters.create', ['course_id' => $course->id]) }}" class="px-3 py-2.5 rounded-lg bg-indigo-600 text-white text-sm font-bold hover:bg-indigo-700 transition-colors">Add Chapter (chapters)</a>
+        <h3 class="text-xl font-bold text-gray-900">Chapitres</h3>
+        <a href="{{ route('admin.chapters.create', ['course_id' => $course->id]) }}" class="px-3 py-2.5 rounded-lg bg-indigo-600 text-white text-sm font-bold hover:bg-indigo-700 transition-colors">Ajouter un chapitre</a>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <!-- Chapters List (Left Sidebar) -->
         <div class="lg:col-span-1">
             <div class="bg-white p-6 rounded-lg border border-gray-200">
-                <h4 class="font-bold text-gray-900 mb-4">chapters.order & chapters.title</h4>
+                <h4 class="font-bold text-gray-900 mb-4">Liste des chapitres</h4>
                 <div class="space-y-2">
                     @forelse($course->chapters as $chapter)
                     <button onclick="selectChapter({{ $chapter->id }})" class="chapter-tab w-full text-left p-3 rounded-lg hover:bg-gray-50 border-2 border-transparent transition-all" data-chapter-id="{{ $chapter->id }}">
-                        <div class="text-sm font-bold text-gray-900">[{{ $chapter->order }}] {{ $chapter->title }}</div>
-                        <div class="text-xs text-gray-500 mt-1">{{ $chapter->resources->count() }} resource blocks</div>
+                        <div class="text-sm font-bold text-gray-900">{{ $chapter->order }}. {{ $chapter->title }}</div>
+                        <div class="text-xs text-gray-500 mt-1">{{ $chapter->resources->count() }} ressources</div>
                     </button>
                     @empty
-                    <div class="py-8 text-center text-gray-400 font-bold italic">No chapters added</div>
+                    <div class="py-8 text-center text-gray-400 font-bold italic">Aucun chapitre</div>
                     @endforelse
                 </div>
             </div>
@@ -34,13 +34,13 @@
                 <div class="p-6 border-b border-gray-200">
                     <div class="flex justify-between items-start">
                         <div>
-                            <h4 class="text-lg font-bold text-gray-900 mb-2">chapters.id={{ $chapter->id }}, chapters.order={{ $chapter->order }}, chapters.title={{ $chapter->title }}</h4>
+                            <h4 class="text-lg font-bold text-gray-900 mb-2">Chapitre {{ $chapter->order }} : {{ $chapter->title }}</h4>
                         </div>
                         <div class="flex gap-2">
-                            <a href="{{ route('admin.chapters.edit', $chapter) }}" class="px-3 py-2 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 text-xs font-bold transition">Edit (chapters)</a>
-                            <form action="{{ route('admin.chapters.destroy', $chapter) }}" method="POST" onsubmit="return confirm('Delete this chapter?')" class="inline">
+                            <a href="{{ route('admin.chapters.edit', $chapter) }}" class="px-3 py-2 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 text-xs font-bold transition">Modifier</a>
+                            <form action="{{ route('admin.chapters.destroy', $chapter) }}" method="POST" onsubmit="return confirm('Supprimer ce chapitre ?')" class="inline">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="px-3 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 text-xs font-bold transition">Delete (chapters)</button>
+                                <button type="submit" class="px-3 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 text-xs font-bold transition">Supprimer</button>
                             </form>
                         </div>
                     </div>
@@ -73,22 +73,22 @@
                         @endif
                     @empty
                         <div class="p-6 text-center text-gray-500 italic">
-                            No chapter content uploaded.
+                            Aucun contenu pour ce chapitre.
                         </div>
                     @endforelse
                 </div>
 
-                <!-- Quizzes Section (quizzes.chapter_id) -->
+                <!-- Quizzes Section -->
                 <div class="p-6 bg-indigo-50 border-t-2 border-indigo-200 flex items-center justify-between">
                     <div>
-                        <h5 class="font-bold text-indigo-900 mb-1">quizzes (Linked to chapters.id)</h5>
-                        <p class="text-xs text-indigo-700">Manage quizzes for this chapter via quizzes.chapter_id</p>
+                        <h5 class="font-bold text-indigo-900 mb-1">Évaluations / Quiz</h5>
+                        <p class="text-xs text-indigo-700">Gérer les quiz associés à ce chapitre.</p>
                     </div>
-                    <a href="{{ route('admin.quizzes.index', ['chapter_id' => $chapter->id]) }}" class="px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded-lg hover:bg-indigo-700 transition">Manage Quizzes →</a>
+                    <a href="{{ route('admin.quizzes.index', ['chapter_id' => $chapter->id]) }}" class="px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded-lg hover:bg-indigo-700 transition">Gérer les Quiz →</a>
                 </div>
             </div>
             @empty
-            <div class="col-span-full py-12 text-center text-gray-400 font-bold italic">No chapters added to this course.</div>
+            <div class="col-span-full py-12 text-center text-gray-400 font-bold italic">Aucun chapitre ajouté à ce cours.</div>
             @endforelse
         </div>
     </div>
