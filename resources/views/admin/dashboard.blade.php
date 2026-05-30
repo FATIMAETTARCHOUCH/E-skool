@@ -224,7 +224,7 @@
     
 
     <!-- Top Students (First Attempt Success) -->
-    <div class="p-6 bg-white border border-gray-200 rounded-lg overflow-hidden mt-8 relative">
+    <div class="p-6 bg-white border border-gray-200 rounded-lg mt-8 relative" x-data="{ activeGroup: null }">
         <div class="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
         <div class="flex justify-between items-center mb-10">
             <div class="flex items-center gap-2">
@@ -236,39 +236,83 @@
             </span>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @forelse($topStudents as $result)
-            <div class="p-5 bg-gradient-to-br from-amber-50/30 to-amber-100/10 border border-amber-200/60 rounded-xl flex items-center gap-4 group hover:border-amber-300 transition-all shadow-sm">
-                <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-black border border-amber-200 shadow-inner shrink-0 relative">
-                    <span class="absolute -top-1.5 -right-1 text-xs">👑</span>
-                    {{ substr($result->user->first_name, 0, 1) }}{{ substr($result->user->last_name, 0, 1) }}
-                </div>
-                <div class="flex-1 overflow-hidden">
-                    <div class="flex items-center gap-1.5">
-                        <p class="font-bold text-gray-900 truncate">{{ $result->user->first_name }} {{ $result->user->last_name }}</p>
-                    </div>
-                    <p class="text-[9px] text-gray-500 font-bold uppercase truncate mt-0.5">{{ $result->quiz->title }}</p>
-                    @if($result->user->group)
-                        <span class="inline-block px-1.5 py-0.5 rounded text-[8px] font-black bg-indigo-50 text-indigo-700 uppercase tracking-wider mt-1 border border-indigo-100/50">
-                            {{ $result->user->group->name }}
-                        </span>
-                    @endif
-                </div>
-                <div class="text-right shrink-0">
-                    <div class="font-black text-amber-600 text-lg">{{ $result->score }}%</div>
-                    <p class="text-[8px] text-amber-800 font-bold uppercase tracking-wider">1er essai</p>
-                </div>
-            </div>
-            @empty
-            <div class="col-span-full py-12 text-center text-gray-400 text-sm italic border border-dashed border-gray-200 rounded-lg">
+        @if($topGroups->isEmpty())
+            <div class="py-12 text-center text-gray-400 text-sm italic border border-dashed border-gray-200 rounded-lg">
                 Aucun élève n'a encore validé de quiz dès le premier essai.
             </div>
-            @endforelse
-        </div>
+        @else
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                @foreach($topGroups as $group)
+                    <div class="border border-gray-200 rounded-lg p-4 cursor-pointer hover:border-amber-300 hover:shadow-sm transition-all"
+                         :class="activeGroup === {{ $group['id'] }} ? 'border-amber-500 ring-1 ring-amber-500 bg-amber-50/20' : 'bg-gray-50/50'"
+                         @click="activeGroup = (activeGroup === {{ $group['id'] }} ? null : {{ $group['id'] }})">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h5 class="font-bold text-gray-900 text-base">{{ $group['name'] }}</h5>
+                                <p class="text-xs text-gray-500 mt-1 uppercase font-medium">{{ $group['count'] }} {{ Str::plural('élève', $group['count']) }} en réussite</p>
+                            </div>
+                            <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-black">
+                                {{ $group['count'] }}
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            <!-- Group Details Panel -->
+            @foreach($topGroups as $group)
+                <div x-show="activeGroup === {{ $group['id'] }}" 
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 transform scale-95"
+                     x-transition:enter-end="opacity-100 transform scale-100"
+                     class="border border-amber-200 bg-amber-50/10 rounded-lg p-5 mt-4"
+                     style="display: none;">
+                    <div class="flex items-center justify-between border-b border-amber-100 pb-3 mb-4">
+                        <h5 class="font-bold text-amber-900 text-sm uppercase">Détails des Réussites au 1er essai - {{ $group['name'] }}</h5>
+                        <button @click="activeGroup = null" class="text-xs font-bold text-gray-500 hover:text-gray-700 uppercase">Fermer</button>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead>
+                                <tr class="text-amber-800 text-xs uppercase font-bold tracking-wide border-b border-amber-100">
+                                    <th class="py-2">Élève</th>
+                                    <th class="py-2">Quiz / Chapitre</th>
+                                    <th class="py-2">Date de réussite</th>
+                                    <th class="py-2 text-right">Score</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-amber-50/50">
+                                @foreach($group['results'] as $result)
+                                    <tr>
+                                        <td class="py-3">
+                                            <div class="font-bold text-gray-900">{{ $result->user->first_name }} {{ $result->user->last_name }}</div>
+                                            <div class="text-[10px] text-gray-500 uppercase mt-0.5">{{ $result->user->massar_code }}</div>
+                                        </td>
+                                        <td class="py-3">
+                                            <div class="font-bold text-gray-800">{{ $result->quiz->title }}</div>
+                                            @if($result->quiz->chapter)
+                                                <div class="text-[10px] text-indigo-600 uppercase mt-0.5">Partie {{ $result->quiz->chapter->order }} : {{ $result->quiz->chapter->title }}</div>
+                                            @endif
+                                        </td>
+                                        <td class="py-3 text-gray-600">
+                                            {{ $result->created_at->format('d/m/Y H:i') }}
+                                        </td>
+                                        <td class="py-3 text-right">
+                                            <span class="font-black text-amber-600 text-base">{{ $result->score }}%</span>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @endforeach
+        @endif
     </div>
 
     <!-- Second Attempt Successes -->
-    <div class="p-6 bg-white border border-gray-200 rounded-lg overflow-hidden mt-8 relative">
+    <div class="p-6 bg-white border border-gray-200 rounded-lg mt-8 relative" x-data="{ activeGroup: null }">
         <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
         <div class="flex justify-between items-center mb-10">
             <div class="flex items-center gap-2">
@@ -280,35 +324,79 @@
             </span>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @forelse($secondAttemptStudents as $result)
-            <div class="p-5 bg-gradient-to-br from-emerald-50/30 to-emerald-100/10 border border-emerald-200/60 rounded-xl flex items-center gap-4 group hover:border-emerald-300 transition-all shadow-sm">
-                <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-black border border-emerald-200 shadow-inner shrink-0 relative">
-                    <span class="absolute -top-1.5 -right-1 text-xs">⭐</span>
-                    {{ substr($result->user->first_name, 0, 1) }}{{ substr($result->user->last_name, 0, 1) }}
-                </div>
-                <div class="flex-1 overflow-hidden">
-                    <div class="flex items-center gap-1.5">
-                        <p class="font-bold text-gray-900 truncate">{{ $result->user->first_name }} {{ $result->user->last_name }}</p>
-                    </div>
-                    <p class="text-[9px] text-gray-500 font-bold uppercase truncate mt-0.5">{{ $result->quiz->title }}</p>
-                    @if($result->user->group)
-                        <span class="inline-block px-1.5 py-0.5 rounded text-[8px] font-black bg-indigo-50 text-indigo-700 uppercase tracking-wider mt-1 border border-indigo-100/50">
-                            {{ $result->user->group->name }}
-                        </span>
-                    @endif
-                </div>
-                <div class="text-right shrink-0">
-                    <div class="font-black text-emerald-600 text-lg">{{ $result->score }}%</div>
-                    <p class="text-[8px] text-emerald-800 font-bold uppercase tracking-wider">2ème essai</p>
-                </div>
-            </div>
-            @empty
-            <div class="col-span-full py-12 text-center text-gray-400 text-sm italic border border-dashed border-gray-200 rounded-lg">
+        @if($secondAttemptGroups->isEmpty())
+            <div class="py-12 text-center text-gray-400 text-sm italic border border-dashed border-gray-200 rounded-lg">
                 Aucun élève n'a encore validé de quiz à la deuxième tentative.
             </div>
-            @endforelse
-        </div>
+        @else
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                @foreach($secondAttemptGroups as $group)
+                    <div class="border border-gray-200 rounded-lg p-4 cursor-pointer hover:border-emerald-300 hover:shadow-sm transition-all"
+                         :class="activeGroup === {{ $group['id'] }} ? 'border-emerald-500 ring-1 ring-emerald-500 bg-emerald-50/20' : 'bg-gray-50/50'"
+                         @click="activeGroup = (activeGroup === {{ $group['id'] }} ? null : {{ $group['id'] }})">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h5 class="font-bold text-gray-900 text-base">{{ $group['name'] }}</h5>
+                                <p class="text-xs text-gray-500 mt-1 uppercase font-medium">{{ $group['count'] }} {{ Str::plural('élève', $group['count']) }} persévérant(s)</p>
+                            </div>
+                            <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-black">
+                                {{ $group['count'] }}
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            <!-- Group Details Panel -->
+            @foreach($secondAttemptGroups as $group)
+                <div x-show="activeGroup === {{ $group['id'] }}" 
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 transform scale-95"
+                     x-transition:enter-end="opacity-100 transform scale-100"
+                     class="border border-emerald-200 bg-emerald-50/10 rounded-lg p-5 mt-4"
+                     style="display: none;">
+                    <div class="flex items-center justify-between border-b border-emerald-100 pb-3 mb-4">
+                        <h5 class="font-bold text-emerald-900 text-sm uppercase">Détails des Réussites à la 2ème Tentative - {{ $group['name'] }}</h5>
+                        <button @click="activeGroup = null" class="text-xs font-bold text-gray-500 hover:text-gray-700 uppercase">Fermer</button>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead>
+                                <tr class="text-emerald-800 text-xs uppercase font-bold tracking-wide border-b border-emerald-100">
+                                    <th class="py-2">Élève</th>
+                                    <th class="py-2">Quiz / Chapitre</th>
+                                    <th class="py-2">Date de réussite</th>
+                                    <th class="py-2 text-right">Score</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-emerald-50/50">
+                                @foreach($group['results'] as $result)
+                                    <tr>
+                                        <td class="py-3">
+                                            <div class="font-bold text-gray-900">{{ $result->user->first_name }} {{ $result->user->last_name }}</div>
+                                            <div class="text-[10px] text-gray-500 uppercase mt-0.5">{{ $result->user->massar_code }}</div>
+                                        </td>
+                                        <td class="py-3">
+                                            <div class="font-bold text-gray-800">{{ $result->quiz->title }}</div>
+                                            @if($result->quiz->chapter)
+                                                <div class="text-[10px] text-indigo-600 uppercase mt-0.5">Partie {{ $result->quiz->chapter->order }} : {{ $result->quiz->chapter->title }}</div>
+                                            @endif
+                                        </td>
+                                        <td class="py-3 text-gray-600">
+                                            {{ $result->created_at->format('d/m/Y H:i') }}
+                                        </td>
+                                        <td class="py-3 text-right">
+                                            <span class="font-black text-emerald-600 text-base">{{ $result->score }}%</span>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @endforeach
+        @endif
     </div>
 
 <!-- Recent Activity Row -->

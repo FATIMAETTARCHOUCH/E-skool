@@ -49,7 +49,7 @@
                             <div class="flex items-center gap-4 p-2 rounded-2xl hover:bg-brand-50/50 transition-colors">
                                 <label class="cursor-pointer">
                                     <input type="radio" name="correct_option" value="0" checked class="peer hidden">
-                                    <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-center peer-checked:bg-emerald-500 peer-checked:border-emerald-500 peer-checked:text-white transition-all text-slate-300">
+                                    <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-center peer-checked:!bg-emerald-500 peer-checked:!border-emerald-500 peer-checked:!text-white transition-all text-slate-300">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M5 13l4 4L19 7"></path></svg>
                                     </div>
                                 </label>
@@ -62,7 +62,7 @@
                             <div class="flex items-center gap-4 p-2 rounded-2xl hover:bg-brand-50/50 transition-colors">
                                 <label class="cursor-pointer">
                                     <input type="radio" name="correct_option" value="1" class="peer hidden">
-                                    <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-center peer-checked:bg-emerald-500 peer-checked:border-emerald-500 peer-checked:text-white transition-all text-slate-300">
+                                    <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-center peer-checked:!bg-emerald-500 peer-checked:!border-emerald-500 peer-checked:!text-white transition-all text-slate-300">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M5 13l4 4L19 7"></path></svg>
                                     </div>
                                 </label>
@@ -157,7 +157,7 @@
             <div class="flex items-center gap-4 p-2 rounded-2xl hover:bg-brand-50/50 transition-colors">
                 <label class="cursor-pointer">
                     <input type="radio" name="correct_option" value="${currentOptions}" class="peer hidden">
-                    <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-center peer-checked:bg-emerald-500 peer-checked:border-emerald-500 peer-checked:text-white transition-all text-slate-300">
+                    <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-center peer-checked:!bg-emerald-500 peer-checked:!border-emerald-500 peer-checked:!text-white transition-all text-slate-300">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M5 13l4 4L19 7"></path></svg>
                     </div>
                 </label>

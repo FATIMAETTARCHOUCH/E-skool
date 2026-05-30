@@ -62,25 +62,47 @@ class AdminController extends Controller
             ];
         })->values();
 
-        // Top Students (Passed on first attempt)
-        $topStudents = \App\Models\Result::where('attempt_number', 1)
+        // Top Students (Passed on first attempt) grouped by Group
+        $topResults = \App\Models\Result::where('attempt_number', 1)
             ->where('is_passed', true)
             ->with(['user.group', 'quiz.chapter.course'])
             ->orderBy('score', 'desc')
             ->orderBy('created_at', 'desc')
-            ->take(6)
             ->get();
 
-        // Second Attempt Successes
-        $secondAttemptStudents = \App\Models\Result::where('attempt_number', 2)
+        $topGroups = $topResults->groupBy(function($r) {
+            return $r->user && $r->user->group ? $r->user->group->id : 0;
+        })->map(function($results, $groupId) {
+            $groupName = $groupId == 0 ? 'Sans Groupe' : $results->first()->user->group->name;
+            return [
+                'id' => $groupId,
+                'name' => $groupName,
+                'count' => $results->unique('user_id')->count(),
+                'results' => $results
+            ];
+        })->values();
+
+        // Second Attempt Successes grouped by Group
+        $secondAttemptResults = \App\Models\Result::where('attempt_number', 2)
             ->where('is_passed', true)
             ->with(['user.group', 'quiz.chapter.course'])
             ->orderBy('score', 'desc')
             ->orderBy('created_at', 'desc')
-            ->take(6)
             ->get();
 
-        return view('admin.dashboard', compact('maintenance', 'stats', 'groupPerformance', 'recentResults', 'blockedGroups', 'topStudents', 'secondAttemptStudents'));
+        $secondAttemptGroups = $secondAttemptResults->groupBy(function($r) {
+            return $r->user && $r->user->group ? $r->user->group->id : 0;
+        })->map(function($results, $groupId) {
+            $groupName = $groupId == 0 ? 'Sans Groupe' : $results->first()->user->group->name;
+            return [
+                'id' => $groupId,
+                'name' => $groupName,
+                'count' => $results->unique('user_id')->count(),
+                'results' => $results
+            ];
+        })->values();
+
+        return view('admin.dashboard', compact('maintenance', 'stats', 'groupPerformance', 'recentResults', 'blockedGroups', 'topGroups', 'secondAttemptGroups'));
     }
 
     public function toggleMaintenance()
