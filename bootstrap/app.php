@@ -15,5 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->prepend(\App\Http\Middleware\CheckDatabaseConnection::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (\Illuminate\Http\Exceptions\PostTooLargeException $e, \Illuminate\Http\Request $request) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['file' => 'Le fichier ou les données envoyées dépassent la limite autorisée par le serveur (maximum : ' . ini_get('post_max_size') . ').']);
+        });
     })->create();

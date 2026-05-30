@@ -22,6 +22,13 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo_mysql bcmath zip gd
 
+# Increase PHP upload and memory limits
+RUN echo "upload_max_filesize = 120M" > /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "post_max_size = 125M" >> /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "memory_limit = 512M" >> /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "max_execution_time = 300" >> /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "max_input_time = 300" >> /usr/local/etc/php/conf.d/uploads.ini
+
 # Enable Apache mod_rewrite and disable conflicting MPMs (ensure only prefork is active)
 RUN a2enmod rewrite && (a2dismod mpm_event mpm_worker || true) && a2enmod mpm_prefork
 

@@ -235,6 +235,45 @@
         }
     }
 
+    const maxSizes = {
+        pdf: 20 * 1024 * 1024,     // 20 MB
+        video: 100 * 1024 * 1024,  // 100 MB
+        image: 5 * 1024 * 1024     // 5 MB
+    };
+    const sizeLabels = {
+        pdf: '20 Mo',
+        video: '100 Mo',
+        image: '5 Mo'
+    };
+
+    function validateFile(row) {
+        const typeSelect = row.querySelector('[data-field="type"]');
+        const fileInput = row.querySelector('[data-field="file"]');
+        if (!fileInput) return;
+
+        // Remove any existing error message
+        const existingError = fileInput.parentNode.querySelector('.js-size-error');
+        if (existingError) {
+            existingError.remove();
+        }
+        fileInput.setCustomValidity('');
+
+        if (fileInput.files && fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            const type = typeSelect.value;
+            const maxSize = maxSizes[type];
+
+            if (maxSize && file.size > maxSize) {
+                fileInput.value = ''; // Clear file input
+                const errorMsg = document.createElement('p');
+                errorMsg.className = 'text-red-600 text-xs mt-1 js-size-error font-medium';
+                errorMsg.textContent = `La taille du fichier (${(file.size / (1024 * 1024)).toFixed(2)} Mo) dépasse la limite autorisée pour ce type (${sizeLabels[type]}).`;
+                fileInput.parentNode.appendChild(errorMsg);
+                fileInput.setCustomValidity(`Le fichier dépasse la limite de ${sizeLabels[type]}.`);
+            }
+        }
+    }
+
     function toggleResourceFields(row) {
         const type = row.querySelector('[data-field="type"]').value;
         const fileWrap = row.querySelector('[data-wrapper="file"]');
@@ -251,6 +290,7 @@
             textWrap.classList.add('hidden');
             fileInput.setAttribute('accept', acceptByType[type] || '');
         }
+        validateFile(row);
         updateRemediationAvailability();
     }
 
@@ -263,8 +303,13 @@
         fileInput.name = `${prefix}[${index}][file]`;
         valueInput.name = `${prefix}[${index}][value]`;
 
-        typeSelect.addEventListener('change', () => toggleResourceFields(row));
-        fileInput.addEventListener('change', updateRemediationAvailability);
+        typeSelect.addEventListener('change', () => {
+            toggleResourceFields(row);
+        });
+        fileInput.addEventListener('change', () => {
+            validateFile(row);
+            updateRemediationAvailability();
+        });
         valueInput.addEventListener('input', updateRemediationAvailability);
 
         row.querySelector('[data-action="remove-row"]').addEventListener('click', () => {
